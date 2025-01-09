@@ -1,0 +1,16 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+#releaseStagesContainer {
+    margin-bottom: 20px;
+}
+
+#addReleaseStage {
+    margin-top: 20px;
+}
+
+input, textarea, button {
+    display: block;
+    margin-bottom: 10px;
+}
