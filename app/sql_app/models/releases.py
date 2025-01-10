@@ -17,7 +17,7 @@ class ReleaseStage(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
-    staged = Column(Enum(ReleaseStageEnum), server_default=ReleaseStageEnum.created)
+    staged = Column(Enum(ReleaseStageEnum), default='created')
     description = Column(String)
     start_date = Column(Date)
     end_date = Column(Date)

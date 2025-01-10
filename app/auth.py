@@ -30,20 +30,3 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-
-def get_current_user(db: Session = Depends(get_database), token: str = Depends()):
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        user = get_user(username=username, db=db)
-        if user is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        return user
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-
-def get_current_active_user(current_user: User = Depends(get_current_user)):
-    return current_user
