@@ -7,7 +7,7 @@ import { loadHelp } from "./components/help.js";
 document.addEventListener("DOMContentLoaded", () => {
     const app = document.getElementById("app");
 
-    // Проверка авторизации
+    // Check for authentication
     const token = localStorage.getItem("authToken");
     if (token) {
         setAuthToken(token);
@@ -40,7 +40,6 @@ function showLoginForm() {
         const password = document.getElementById("password").value;
         try {
             const response = await login(username, password);
-            localStorage.setItem("authToken", response.access_token);
             setAuthToken(response.access_token);
             alert("Login successful!");
             location.reload();
