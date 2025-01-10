@@ -1,7 +1,7 @@
 import enum
 
 from passlib.context import CryptContext
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Enum
 from sqlalchemy.orm import Session
 
 from app.sql_app.database import Base
@@ -22,7 +22,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
-    role = Column(RolesEnum, default=RolesEnum.USER)
+    role = Column(Enum(RolesEnum), default=RolesEnum.USER)
     hashed_password = Column(String)
 
     @property
@@ -35,6 +35,3 @@ class User(Base):
 
     def verify_password(self, password: str):
         return pwd_context.verify(password, self.hashed_password)
-
-
-

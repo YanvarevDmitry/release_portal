@@ -1,6 +1,6 @@
 import enum
 
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, Date, Enum
 
 from app.sql_app.database import Base
 
@@ -17,7 +17,7 @@ class ReleaseStage(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
-    staged = Column(ReleaseStageEnum, server_default=ReleaseStageEnum.created)
+    staged = Column(Enum(ReleaseStageEnum), server_default=ReleaseStageEnum.created)
     description = Column(String)
     start_date = Column(Date)
     end_date = Column(Date)
