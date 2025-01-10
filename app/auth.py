@@ -4,8 +4,9 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 
+from app.models import User
 from app.sql_app.users_service import get_user
-from models import User
+
 from app.sql_app.database import get_database
 
 SECRET_KEY = "secret_key_for_jwt"
