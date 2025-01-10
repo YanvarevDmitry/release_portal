@@ -22,7 +22,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
-    role = Column(Enum(RolesEnum), default='user')
+    role = Column(Enum(RolesEnum), default=RolesEnum.USER)
     hashed_password = Column(String)
 
     @property
