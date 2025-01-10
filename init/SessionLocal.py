@@ -1,14 +1,15 @@
 # create_db.py
 
 from sqlalchemy.orm import Session
-from app.models import User, ReleaseStage
-from app.database import SessionLocal, init_db
+from app.sql_app.models import User, ReleaseStage
+from database import SessionLocal, init_db
+
 
 def create_initial_data(db: Session):
     # Добавление пользователей
     user1 = User(username="admin", password="hashed_password", role="admin")
     user2 = User(username="developer", password="hashed_password", role="user")
-    
+
     db.add(user1)
     db.add(user2)
     db.commit()
@@ -35,12 +36,14 @@ def create_initial_data(db: Session):
     db.add(release_stage2)
     db.commit()
 
+
 # Инициализация БД и добавление данных
 def init():
     init_db()  # Создание таблиц
     db = SessionLocal()  # Открытие сессии
     create_initial_data(db)  # Добавление тестовых данных
     db.close()
+
 
 if __name__ == "__main__":
     init()  # Запуск процесса

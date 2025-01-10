@@ -1,16 +1,37 @@
 body {
     font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
-#releaseStagesContainer {
-    margin-bottom: 20px;
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 1rem;
+    text-align: center;
 }
 
-#addReleaseStage {
-    margin-top: 20px;
+header nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
 }
 
-input, textarea, button {
-    display: block;
-    margin-bottom: 10px;
+header nav ul li {
+    margin: 0 1rem;
+}
+
+header nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+main {
+    padding: 2rem;
+}
+
+.hidden {
+    display: none;
 }
