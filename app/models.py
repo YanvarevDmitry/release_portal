@@ -34,7 +34,7 @@ class UserUpdate(BaseModel):
         orm_mode = True
 
 
-class User(Base):
+class User(BaseModel):
     id: int
     username: str
     password: str
