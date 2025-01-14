@@ -60,3 +60,4 @@ def populate_users():
 
 # Вызов функции для создания релизов
 populate_releases()
+populate_users()

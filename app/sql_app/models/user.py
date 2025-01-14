@@ -2,9 +2,7 @@ import enum
 
 from passlib.context import CryptContext
 from sqlalchemy import Column, Integer, String, Enum
-from sqlalchemy.orm import Session
-
-from app.sql_app.database import Base
+from sql_app.database import Base
 
 # Инициализация контекста для хэширования паролей
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
