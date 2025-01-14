@@ -30,11 +30,11 @@ def create_task_type(task: TaskTypeCreate,
 
 
 @router.get("/types", response_model=TaskTypeOut, status_code=200)
-def get_all_task_type(key_name: str, db: db_session):
+def get_task_type(key_name: str, db: db_session):
     return tasks_service.get_task_type(key_name=key_name, db=db)
 
 
-@router.get("/types", response_model=list[TaskTypeOut], status_code=200)
+@router.get("/types/all", response_model=list[TaskTypeOut], status_code=200)
 def get_all_task_type(db: db_session):
     return tasks_service.get_all_task_types(db=db)
 

@@ -14,6 +14,11 @@ def get_task_type(db: Session, key_name: str | None = None, id: int | None = Non
     return db.execute(stmt).scalar_one_or_none()
 
 
+def get_all_task_types(db: Session):
+    stmt = select(TaskType)
+    return db.execute(stmt).scalars().all()
+
+
 def create_task_type(db: Session,
                      key_name: str,
                      name: str,
