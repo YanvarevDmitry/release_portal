@@ -6,27 +6,27 @@ import pytz
 from sqlalchemy.orm import Session
 
 from schemas import ReleaseStageCreate
-from sql_app.models.releases import ReleaseStage, ReleaseType
+from sql_app.models.releases import Release, ReleaseType
 
 
-def create_release_stage(stage: ReleaseStageCreate, db) -> ReleaseStage:
-    db_stage = ReleaseStage(**stage.dict())
+def create_release(stage: ReleaseStageCreate, db) -> Release:
+    db_stage = Release(**stage.dict())
     db.add(db_stage)
     db.commit()
     db.refresh(db_stage)
     return db_stage
 
 
-def get_all_releases(db) -> list[ReleaseStage]:
-    return db.execute(select(ReleaseStage)).scalars().all()
+def get_all_releases(db) -> list[Release]:
+    return db.execute(select(Release)).scalars().all()
 
 
 def get_release(db: Session, name: str | None = None, release_id: int | None = None):
-    stmt = select(ReleaseStage)
+    stmt = select(Release)
     if name:
-        stmt = stmt.where(ReleaseStage.name == name)
+        stmt = stmt.where(Release.name == name)
     if release_id:
-        stmt = stmt.where(ReleaseStage.id == release_id)
+        stmt = stmt.where(Release.id == release_id)
     return db.execute(stmt).scalar_one_or_none()
 
 
@@ -36,7 +36,7 @@ def update_release(stage_id: int,
                    start_date: str | None,
                    end_date: str | None,
                    db: Session):
-    stage = db.query(ReleaseStage).filter(ReleaseStage.id == stage_id).first()
+    stage = db.query(Release).filter(Release.id == stage_id).first()
     if not stage:
         raise HTTPException(status_code=404, detail="Release stage not found")
 
@@ -54,8 +54,8 @@ def update_release(stage_id: int,
     return stage
 
 
-def delete_release_stage(stage_id: int, db: Session):
-    stmt = delete(ReleaseStage).where(ReleaseStage.id == stage_id).returning(ReleaseStage)
+def delete_release(stage_id: int, db: Session):
+    stmt = delete(Release).where(Release.id == stage_id).returning(Release)
     release = db.execute(stmt).one()
     db.commit()
     return release

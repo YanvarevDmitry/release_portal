@@ -12,8 +12,8 @@ class ReleaseStageEnum(enum.Enum):
     cancelled = "cancelled"
 
 
-class ReleaseStage(Base):
-    __tablename__ = "release_stages"
+class Release(Base):
+    __tablename__ = "releases"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)

@@ -8,7 +8,7 @@ from sql_app.database import Base
 from sql_app.models.channels import Channel
 from sql_app.models.features import FeatureType, FeatureTypeTaskType
 from sql_app.models.platforms import Platform
-from sql_app.models.releases import ReleaseStage, ReleaseStageEnum, ReleaseType
+from sql_app.models.releases import Release, ReleaseStageEnum, ReleaseType
 from sql_app.models.tasks import TaskType
 from sql_app.models.user import User, RolesEnum
 
@@ -83,7 +83,7 @@ def populate_releases():
     session = Session(bind=engine)
     try:
         # Пример данных для таблицы ReleaseStage
-        release1 = ReleaseStage(
+        release1 = Release(
             name="Release ios",
             status=ReleaseStageEnum.created,
             description="First ios release",
@@ -93,7 +93,7 @@ def populate_releases():
             channel_id=1,
             release_type_id=2,
         )
-        release2 = ReleaseStage(
+        release2 = Release(
             name="Release Android",
             status=ReleaseStageEnum.in_progress,
             description="First adnroid release",

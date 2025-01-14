@@ -16,13 +16,13 @@ from sql_app.releases_service import get_all_releases, update_release, get_relea
 from schemas import ReleaseStageCreate, User, ReleaseStageOut, ReleaseTypeOut
 from auth import get_current_user
 
-router = APIRouter(prefix="/release_stages", tags=["release_stages"])
+router = APIRouter(prefix="/releases", tags=["releases"])
 get_current_user = Annotated[User, Depends(get_current_user)]
 db_session = Annotated[Session, Depends(get_database)]
 
 
 @router.post("/", response_model=ReleaseStageOut)
-def create_release_stage(stage: ReleaseStageCreate,
+def create_release(stage: ReleaseStageCreate,
                          current_user: get_current_user,
                          db: db_session,
                          ):
@@ -34,18 +34,18 @@ def create_release_stage(stage: ReleaseStageCreate,
         raise HTTPException(status_code=404, detail="Channel not found")
     if not get_platform(platform_id=stage.platform_id, db=db):
         raise HTTPException(status_code=404, detail="Platform not found")
-    release = releases_service.create_release_stage(stage=stage, db=db)
+    release = releases_service.create_release(stage=stage, db=db)
     return release
 
 
 @router.get("/", response_model=list[ReleaseStageOut])
-def get_all_release_stages(db: db_session):
+def get_all_releases(db: db_session):
     releases = get_all_releases(db=db)
     return releases
 
 
 @router.delete("/{stage_id}", status_code=204)
-def delete_release_stage(stage_id: int,
+def delete_release(stage_id: int,
                          current_user: get_current_user,
                          db: db_session):
     if current_user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
@@ -53,7 +53,7 @@ def delete_release_stage(stage_id: int,
     release = releases_service.get_release(release_id=stage_id, db=db)
     if not release:
         raise HTTPException(status_code=404, detail="Release stage not found")
-    return releases_service.delete_release_stage(stage_id=stage_id, db=db)
+    return releases_service.delete_release(stage_id=stage_id, db=db)
 
 
 @router.get("/report", response_class=FileResponse)
@@ -75,7 +75,7 @@ def generate_report(db: db_session):
 
 
 @router.put("/{stage_id}")
-def update_release_stage(stage_id: int,
+def update_release(stage_id: int,
                          name: str | None,
                          description: str | None,
                          start_date: str | None,
