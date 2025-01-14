@@ -6,7 +6,7 @@ ENV DATABASE_URL=postgresql://postgres:password@db:5432/postgres
 COPY . /
 
 
-RUN pip install -r  requirements.txt --system
+RUN pip install -r  requirements.txt
 
 WORKDIR /app
 
