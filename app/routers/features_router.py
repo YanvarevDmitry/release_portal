@@ -47,6 +47,14 @@ def get_all_features(db: db_session):
     return features_service.get_features(db=db)
 
 
+@router.get("/", status_code=200)
+def get_feature(db: db_session, feature_id: int | None = None, feature_name: str | None = None):
+    feature = features_service.get_features(feature_id=feature_id, feature_name=feature_name, db=db)
+    if not feature:
+        raise HTTPException(status_code=404, detail="Feature not found")
+    return feature[0]
+
+
 @router.post('/', status_code=201)
 def create_feature(feature: FeatureCreate, db: db_session):
     if features_service.get_features(feature_name=feature.name, db=db):
