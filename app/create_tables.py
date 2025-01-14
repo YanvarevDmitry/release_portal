@@ -110,5 +110,8 @@ def populate_releases():
 
 
 # Вызов функции для создания релизов
-populate_releases()
 populate_users()
+populate_platforms()
+populate_channels()
+populate_release_types()
+populate_releases()
