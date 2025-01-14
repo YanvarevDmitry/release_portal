@@ -12,7 +12,7 @@ from sql_app.models.releases import Release, ReleaseStageEnum, ReleaseType
 from sql_app.models.tasks import TaskType
 from sql_app.models.user import User, RolesEnum
 
-engine = create_engine(DbSettings.DB_URL)
+engine = create_engine(DbSettings.DB_URL, client_encoding='utf8')
 
 # Создание всех таблиц
 Base.metadata.create_all(bind=engine)
