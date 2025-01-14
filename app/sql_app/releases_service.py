@@ -1,10 +1,12 @@
 from datetime import datetime
 
 from fastapi import HTTPException
+from sqlalchemy import select, delete
+import pytz
 from sqlalchemy.orm import Session
 
-from models import ReleaseStageCreate
-from sql_app.models.releases import ReleaseStage
+from schemas import ReleaseStageCreate
+from sql_app.models.releases import ReleaseStage, ReleaseType
 
 
 def create_release_stage(stage: ReleaseStageCreate, db) -> ReleaseStage:
@@ -16,7 +18,16 @@ def create_release_stage(stage: ReleaseStageCreate, db) -> ReleaseStage:
 
 
 def get_all_releases(db) -> list[ReleaseStage]:
-    return db.query(ReleaseStage).all()
+    return db.execute(select(ReleaseStage)).scalars().all()
+
+
+def get_release(db: Session, name: str | None = None, release_id: int | None = None):
+    stmt = select(ReleaseStage)
+    if name:
+        stmt = stmt.where(ReleaseStage.name == name)
+    if release_id:
+        stmt = stmt.where(ReleaseStage.id == release_id)
+    return db.execute(stmt).scalar_one_or_none()
 
 
 def update_release(stage_id: int,
@@ -41,3 +52,29 @@ def update_release(stage_id: int,
     db.commit()
     db.refresh(stage)
     return stage
+
+
+def delete_release_stage(stage_id: int, db: Session):
+    stmt = delete(ReleaseStage).where(ReleaseStage.id == stage_id).returning(ReleaseStage)
+    release = db.execute(stmt).one()
+    db.commit()
+    return release
+
+
+def get_all_release_types(db: Session):
+    return db.execute(select(ReleaseType)).scalars().all()
+
+
+def create_release_type(name: str, platform_id: int, channel_id: int, db: Session):
+    release_type = ReleaseType(name=name, platform_id=platform_id, channel_id=channel_id)
+    db.add(release_type)
+    db.commit()
+    db.refresh(release_type)
+    return release_type
+
+
+def delete_release_type(release_type_id: int, db: Session):
+    stmt = delete(ReleaseType).where(ReleaseType.id == release_type_id).returning(ReleaseType)
+    release_type = db.execute(stmt).one()
+    db.commit()
+    return release_type
