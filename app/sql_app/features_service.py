@@ -48,7 +48,7 @@ def get_features(db: Session, feature_id: int | None = None, feature_name: str |
         stmt = stmt.where(FeatureType.id == feature_id)
     if feature_name:
         stmt = stmt.where(func.lower(FeatureType.name).like(f'%{feature_name.lower()}%'))
-    stmt = stmt.group_by(FeatureType.id)
+    stmt = stmt.group_by(Feature.id)
     if feature_id or feature_name:
         return db.execute(stmt).mappings().one_or_none()
     return db.execute(stmt).mappings().all()
