@@ -9,7 +9,7 @@ COPY . /
 RUN python -m pip install uv
 
 # Use uv to install dependencies
-RUN uv sync -r requirements.txt
+RUN uv pip sync  requirements.txt
 
 WORKDIR /app
 
