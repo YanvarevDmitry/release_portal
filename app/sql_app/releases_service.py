@@ -1,11 +1,12 @@
 from datetime import datetime
 
 from fastapi import HTTPException
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, func
 import pytz
 from sqlalchemy.orm import Session
 
 from schemas import ReleaseStageCreate
+from sql_app.models.features import Feature
 from sql_app.models.releases import Release, ReleaseType
 
 
@@ -78,3 +79,15 @@ def delete_release_type(release_type_id: int, db: Session):
     release_type = db.execute(stmt).one()
     db.commit()
     return release_type
+
+
+def get_release_with_features(release_id: int, db: Session):
+    stmt = select(Release, func.array_agg(func.json_agg('id', Feature.id,
+                                                        'name', Feature.name,
+                                                        'feature_type_id', Feature.feature_type_id,
+                                                        'status', Feature.status,
+                                                        )).label('features'))
+    stmt = stmt.join(Feature, Feature.release_id == Release.id)
+    stmt = stmt.where(Release.id == release_id)
+    stmt = stmt.group_by(Release.id)
+    return db.execute(stmt).mappings().one_or_none()

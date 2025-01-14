@@ -38,22 +38,30 @@ def create_release(stage: ReleaseStageCreate,
     return release
 
 
-@router.get("/", response_model=list[ReleaseStageOut])
+@router.get("/all", response_model=list[ReleaseStageOut])
 def get_all_releases(db: db_session):
     releases = releases_service.get_all_releases(db=db)
     return releases
 
 
-@router.delete("/{stage_id}", status_code=204)
-def delete_release(stage_id: int,
+@router.get('/{release_id}', status_code=200)
+def get_release(release_id: int, db: db_session):
+    release = releases_service.get_release_with_features(release_id=release_id, db=db)
+    if not release:
+        raise HTTPException(status_code=404, detail="Release stage not found")
+    return release
+
+
+@router.delete("/{release_id}", status_code=204)
+def delete_release(release_id: int,
                    current_user: get_current_user,
                    db: db_session):
     if current_user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
         raise HTTPException(status_code=403, detail="Not enough permissions")
-    release = releases_service.get_release(release_id=stage_id, db=db)
+    release = releases_service.get_release(release_id=release_id, db=db)
     if not release:
         raise HTTPException(status_code=404, detail="Release stage not found")
-    return releases_service.delete_release(stage_id=stage_id, db=db)
+    return releases_service.delete_release(stage_id=release_id, db=db)
 
 
 @router.get("/report", response_class=FileResponse)
