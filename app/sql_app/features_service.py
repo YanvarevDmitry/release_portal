@@ -45,9 +45,9 @@ def get_features(db: Session, feature_id: int | None = None, feature_name: str |
                                                                  'status', Tasks.status)).label('tasks'))
     stmt = stmt.join(Tasks, Tasks.feature_id == Feature.id)
     if feature_id:
-        stmt = stmt.where(FeatureType.id == feature_id)
+        stmt = stmt.where(Feature.id == feature_id)
     if feature_name:
-        stmt = stmt.where(func.lower(FeatureType.name).like(f'%{feature_name.lower()}%'))
+        stmt = stmt.where(func.lower(Feature.name).like(f'%{feature_name.lower()}%'))
     stmt = stmt.group_by(Feature.id)
     return db.execute(stmt).mappings().all()
 
