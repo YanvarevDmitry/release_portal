@@ -20,7 +20,7 @@ def get_feature_type(db: Session, name: str | None = None, feature_type_id: int 
     if feature_type_id:
         stmt = stmt.where(FeatureType.id == feature_type_id)
 
-    return db.execute(stmt).all()
+    return db.execute(stmt).mappings().all()
 
 
 def create_feature_type(name: str, description: str, db: Session):

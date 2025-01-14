@@ -29,7 +29,8 @@ def create_feature_type(feature: FeatureTypeCreate,
 
 @router.get("/types/{feature_type_id}", status_code=200)
 def get_feature_type(feature_type_id: int, db: db_session):
-    return features_service.get_feature_type(feature_type_id=feature_type_id, db=db)
+    types = features_service.get_feature_type(feature_type_id=feature_type_id, db=db)
+    return types
 
 
 @router.delete("/types/{feature_type_id}", status_code=204)
