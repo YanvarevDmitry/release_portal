@@ -3,8 +3,8 @@ from datetime import datetime
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from app.models import ReleaseStageCreate
-from app.sql_app.models.releases import ReleaseStage
+from models import ReleaseStageCreate
+from sql_app.models.releases import ReleaseStage
 
 
 def create_release_stage(stage: ReleaseStageCreate, db) -> ReleaseStage:

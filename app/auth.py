@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta
 
 from sql_app.models.user import User as DbUser
-from app.sql_app.database import get_database
+from sql_app.database import get_database
 
 # Secret key to encode the JWT token
 SECRET_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaW1hbm9nYSIsImV4cCI6MTczNjg1MzgyN30.zCvt2cQwLtx_jKz8hjbWnQtD7Y2GSxoTUmOrwiWkAhY"

@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Date, Boolean
 from pydantic import BaseModel
-from app.sql_app.database import Base
+from sql_app.database import Base
 
 
 # Модели для передачи данных через API

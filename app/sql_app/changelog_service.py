@@ -1,4 +1,4 @@
-from app.sql_app.models.changelog import ChangeLog
+from sql_app.models.changelog import ChangeLog
 
 
 def create_changelog(stage_id: int, user_id: int, action: str, db) -> ChangeLog:

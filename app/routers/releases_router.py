@@ -6,12 +6,12 @@ from datetime import timedelta
 
 from starlette.status import HTTP_401_UNAUTHORIZED
 
-from app.sql_app.database import get_database
-from app.sql_app.models.releases import ReleaseStage
-from app.sql_app.models.user import RolesEnum
-from app.sql_app.releases_service import get_all_releases, update_release
-from app.models import ReleaseStageCreate, User
-from app.auth import authenticate_user, create_access_token, get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES
+from sql_app.database import get_database
+from sql_app.models.releases import ReleaseStage
+from sql_app.models.user import RolesEnum
+from sql_app.releases_service import get_all_releases, update_release
+from models import ReleaseStageCreate, User
+from auth import authenticate_user, create_access_token, get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES
 
 router = APIRouter(prefix="/release_stages", tags=["release_stages"])
 

@@ -2,7 +2,7 @@ import enum
 
 from sqlalchemy import Column, Integer, String, Date, Enum, DateTime, func
 
-from app.sql_app.database import Base
+from sql_app.database import Base
 
 
 class ReleaseStageEnum(enum.Enum):

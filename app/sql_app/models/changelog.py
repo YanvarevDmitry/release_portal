@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, ForeignKey, String, DateTime
 from sqlalchemy.orm import relationship
 
-from app.sql_app.database import Base
+from sql_app.database import Base
 
 
 class ChangeLog(Base):
