@@ -1,45 +1,69 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import List
-from docx import Document
+from datetime import timedelta
+
+from starlette.status import HTTP_401_UNAUTHORIZED
 
 from app.sql_app.database import get_database
 from app.sql_app.models.releases import ReleaseStage
 from app.sql_app.models.user import RolesEnum
-from app.sql_app.releases_service import get_all_releases
+from app.sql_app.releases_service import get_all_releases, update_release
 from app.models import ReleaseStageCreate, User
+from app.auth import authenticate_user, create_access_token, get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES
 
 router = APIRouter(prefix="/release_stages", tags=["release_stages"])
 
 
+@router.post("/token", response_model=dict)
+def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_database)):
+    user = authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
 @router.post("/", response_model=ReleaseStageCreate)
-def create_release_stage(stage: ReleaseStageCreate, db: Session = Depends(get_database)):
+def create_release_stage(stage: ReleaseStageCreate,
+                         db: Session = Depends(get_database),
+                         current_user: User = Depends(get_current_user)):
+    if current_user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
     release = create_release_stage(stage=stage, db=db)
     return release
 
 
-@router.get("/", response_model=List[ReleaseStageCreate])
+@router.get("/", response_model=list[ReleaseStageCreate])
 def get_all_release_stages(db: Session = Depends(get_database)):
     return get_all_releases(db=db)
 
 
 @router.put("/{stage_id}")
-def update_release_stage(stage_id: int, name: str, description: str, start_date: str, end_date: str,
-                         responsible_person: str, current_user: User,
-                         db: Session = Depends(get_database)):
+def update_release_stage(stage_id: int,
+                         name: str | None,
+                         description: str | None,
+                         start_date: str | None,
+                         end_date: str | None,
+                         current_user: User,
+                         db: Session = Depends(get_database)
+                         ):
     if current_user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
         raise HTTPException(status_code=403, detail="Not enough permissions")
-    stage = db.query(ReleaseStage).filter(ReleaseStage.id == stage_id).first()
-    if not stage:
-        raise HTTPException(status_code=404, detail="Release stage not found")
-
-    stage.name = name
-    stage.description = description
-    stage.start_date = start_date
-    stage.end_date = end_date
-    stage.responsible_person = responsible_person
-    db.commit()
-    db.refresh(stage)
+    return update_release(stage_id=stage_id,
+                          name=name,
+                          description=description,
+                          start_date=start_date,
+                          end_date=end_date,
+                          db=db)
 
 
 @router.get("/report")

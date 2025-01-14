@@ -13,13 +13,6 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/postgres
 
-  frontend:
-    build:
-      context: .
-      dockerfile: static/Dockerfile
-    container_name: frontend_app
-    ports:
-      - "3000:3000"
 
   db:
     image: postgres:13

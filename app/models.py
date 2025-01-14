@@ -9,7 +9,7 @@ class ReleaseStageCreate(BaseModel):
     description: str
     start_date: str
     end_date: str
-    responsible_person: str
+    status: str
 
     class Config:
         orm_mode = True
@@ -42,3 +42,7 @@ class User(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UserInDB(User):
+    hashed_password: str
