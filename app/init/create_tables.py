@@ -2,7 +2,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from auth import get_password_hash
+from app.auth import get_password_hash
 from settings import DbSettings
 from sql_app.database import Base, SessionLocal
 from sql_app.models.releases import ReleaseStage, ReleaseStageEnum

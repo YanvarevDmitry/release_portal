@@ -5,8 +5,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 
-from sql_app.models.user import  User as DbUser
-from app.models import User
+from sql_app.models.user import User as DbUser
 from app.sql_app.database import get_database
 
 # Secret key to encode the JWT token

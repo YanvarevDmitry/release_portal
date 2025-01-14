@@ -1,9 +1,10 @@
-fastapi
+fastapi~=0.110.0
 uvicorn
-sqlalchemy
+sqlalchemy~=1.4.54
 psycopg2-binary
 python-multipart
 python-jose
-passlib[bcrypt]
-pydantic
+passlib[bcrypt]~=1.7.4
+pydantic~=1.10.5
 python-docx==0.8.11
+starlette~=0.36.3
