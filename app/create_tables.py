@@ -89,7 +89,7 @@ def populate_releases():
             end_date="2023-01-31T23:59:59",
             platform_id=2,
             channel_id=1,
-            release_type=2,
+            release_type_id=2,
         )
         release2 = ReleaseStage(
             name="Release Android",
@@ -99,7 +99,7 @@ def populate_releases():
             end_date="2023-02-28T23:59:59",
             platform_id=1,
             channel_id=1,
-            release_type=1
+            release_type_id=1
         )
 
         # Добавление данных в сессию
