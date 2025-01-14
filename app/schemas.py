@@ -1,4 +1,5 @@
 import datetime
+from typing import List
 
 from pydantic import BaseModel
 
@@ -168,9 +169,3 @@ class FeatureOut(BaseModel):
     class Config:
         orm_mode = True
 
-
-class FeatureWithTaskOut(BaseModel):
-    tasks = list[TaskOut]
-
-    class Config:
-        orm_mode = True

@@ -41,12 +41,12 @@ def delete_feature_type(feature_type_id: int, current_user: get_current_user, db
     return features_service.delete_feature_type(feature_type_id=feature_type_id, db=db)
 
 
-@router.get('/', response_model=list[FeatureOut], status_code=200)
+@router.get('/', status_code=200)
 def get_all_features(db: db_session):
     return features_service.get_features(db=db)
 
 
-@router.post('/', response_model=FeatureOut, status_code=201)
+@router.post('/', status_code=201)
 def create_feature(feature: FeatureCreate, db: db_session):
     if not features_service.get_features(feature_name=feature.name, db=db):
         raise HTTPException(status_code=400, detail="Feature with this name already exists")
