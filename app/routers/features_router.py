@@ -49,7 +49,7 @@ def get_all_features(db: db_session):
 
 @router.post('/', status_code=201)
 def create_feature(feature: FeatureCreate, db: db_session):
-    if not features_service.get_features(feature_name=feature.name, db=db):
+    if features_service.get_features(feature_name=feature.name, db=db):
         raise HTTPException(status_code=400, detail="Feature with this name already exists")
     if not releases_service.get_release(release_id=feature.release_id, db=db):
         raise HTTPException(status_code=404, detail="Release not found")
