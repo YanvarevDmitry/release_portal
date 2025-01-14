@@ -6,8 +6,10 @@ from auth import pwd_context
 from settings import DbSettings
 from sql_app.database import Base
 from sql_app.models.channels import Channel
+from sql_app.models.features import FeatureType, FeatureTypeTaskType
 from sql_app.models.platforms import Platform
 from sql_app.models.releases import ReleaseStage, ReleaseStageEnum, ReleaseType
+from sql_app.models.tasks import TaskType
 from sql_app.models.user import User, RolesEnum
 
 engine = create_engine(DbSettings.DB_URL)
@@ -109,9 +111,68 @@ def populate_releases():
         session.close()
 
 
+def populate_task_types():
+    session = Session(bind=engine)
+    try:
+        task_type1 = TaskType(key_name="uxui",
+                              name="Ux Review",
+                              description="Проверка ux review экспертами",
+                              is_required=True)
+        task_type2 = TaskType(key_name="test",
+                              name="Testing task",
+                              description="Проверка на прохождение всех тестов",
+                              is_required=True)
+        task_type3 = TaskType(key_name="analitic",
+                              name="Analitic task",
+                              description="Проверка аналитики экспертами",
+                              is_required=True)
+        task_type4 = TaskType(key_name="feature_toggle",
+                              name="Feature toggle task",
+                              description="Проверка фичи на включение/выключение фиче тоглов",
+                              is_required=True)
+        session.add_all([task_type1, task_type2, task_type3, task_type4])
+        session.commit()
+    finally:
+        session.close()
+
+
+def populate_feature_types():
+    session = Session(bind=engine)
+    try:
+        feature_type1 = FeatureType(name="Фича без ревью", description="тип фичи, где не требуется ревью ux ui")
+        feature_type2 = FeatureType(name="Фича без тогглов", description="тип фичи, где не требуется наличие тогглов")
+        session.add_all([feature_type1, feature_type2])
+        session.commit()
+    finally:
+        session.close()
+
+
+def populate_feature_type_task_types():
+    session = Session(bind=engine)
+    try:
+        feature_type_task_type1 = FeatureTypeTaskType(feature_type_id=1, task_type_id=2)
+        feature_type_task_type2 = FeatureTypeTaskType(feature_type_id=1, task_type_id=3)
+        feature_type_task_type3 = FeatureTypeTaskType(feature_type_id=1, task_type_id=4)
+        feature_type_task_type4 = FeatureTypeTaskType(feature_type_id=2, task_type_id=1)
+        feature_type_task_type5 = FeatureTypeTaskType(feature_type_id=2, task_type_id=2)
+        feature_type_task_type6 = FeatureTypeTaskType(feature_type_id=2, task_type_id=3)
+        session.add_all([feature_type_task_type1,
+                         feature_type_task_type2,
+                         feature_type_task_type3,
+                         feature_type_task_type4,
+                         feature_type_task_type5,
+                         feature_type_task_type6])
+        session.commit()
+    finally:
+        session.close()
+
+
 # Вызов функции для создания релизов
 populate_users()
 populate_platforms()
 populate_channels()
 populate_release_types()
 populate_releases()
+populate_task_types()
+populate_feature_types()
+populate_feature_type_task_types()

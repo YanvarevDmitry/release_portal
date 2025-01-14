@@ -99,27 +99,15 @@ def get_release_types(db: db_session):
 
 
 @router.post("/types", response_model=ReleaseTypeOut, status_code=201)
-def create_release_type(name: str, platform_id: int, channel_id: int, db: db_session):
+def create_release_type(name: str,
+                        platform_id: int,
+                        channel_id: int,
+                        current_user: get_current_user,
+                        db: db_session):
+    if current_user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
     if not get_platform(platform_id=platform_id, db=db):
         raise HTTPException(status_code=404, detail="Platform not found")
     if not get_channel(channel_id=channel_id, db=db):
         raise HTTPException(status_code=404, detail="Channel not found")
     return releases_service.create_release_type(name=name, platform_id=platform_id, channel_id=channel_id, db=db)
-
-
-@router.get("/report", response_class=FileResponse)
-def generate_report(db: db_session):
-    stages = get_all_releases(db=db)
-    doc = Document()
-    doc.add_heading("Release Stages Report", level=1)
-    for stage in stages:
-        doc.add_heading(stage.name, level=2)
-        doc.add_paragraph(f"Description: {stage.description}")
-        doc.add_paragraph(f"Start Date: {stage.start_date}")
-        doc.add_paragraph(f"End Date: {stage.end_date}")
-        doc.add_paragraph(f"Status: {stage.status.value}")
-    file_path = "release_report.docx"
-    doc.save(file_path)
-    return FileResponse(file_path,
-                        media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                        filename=file_path)

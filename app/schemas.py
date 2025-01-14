@@ -108,3 +108,69 @@ class ReleaseTypeCreate(BaseModel):
     channel_id: int
 
 
+class TaskTypeCreate(BaseModel):
+    key_name: str
+    name: str
+    description: str
+    is_required: bool | None
+
+
+class TaskTypeOut(BaseModel):
+    id: int
+    key_name: str
+    name: str
+    description: str
+    is_required: bool
+
+    class Config:
+        orm_mode = True
+
+
+class FeatureTypeCreate(BaseModel):
+    name: str
+    description: str
+
+
+class TaskOut(BaseModel):
+    id: int
+    feature_id: int
+    task_type_id: int
+    status: str
+
+    class Config:
+        orm_mode = True
+
+
+class FeatureTypeOut(BaseModel):
+    id: int
+    name: str
+    description: str
+
+    class Config:
+        orm_mode = True
+
+
+class FeatureCreate(BaseModel):
+    name: str
+    status: str
+    feature_type_id: int
+    release_id: int
+
+
+class FeatureOut(BaseModel):
+    id: int
+    name: str
+    status: str
+    created_at: datetime.datetime
+    feature_type_id: int
+    release_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class FeatureWithTaskOut(BaseModel):
+    tasks = list[TaskOut]
+
+    class Config:
+        orm_mode = True

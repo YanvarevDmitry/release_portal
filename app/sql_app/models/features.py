@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, func
 from datetime import datetime
 from sql_app.database import Base
 
@@ -9,7 +9,8 @@ class Feature(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     status = Column(String, nullable=False)
-    created_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+    release_id = Column(Integer, ForeignKey('releases.id'), nullable=False)
     feature_type_id = Column(Integer, nullable=False)
 
 
@@ -20,3 +21,10 @@ class FeatureType(Base):
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
 
+
+class FeatureTypeTaskType(Base):
+    __tablename__ = 'feature_type_task_types'
+
+    id = Column(Integer, primary_key=True, index=True)
+    feature_type_id = Column(Integer, ForeignKey('feature_types.id'), nullable=False)
+    task_type_id = Column(Integer, ForeignKey('task_types.id'), nullable=False)

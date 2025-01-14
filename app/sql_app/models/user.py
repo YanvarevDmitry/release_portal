@@ -4,10 +4,6 @@ from passlib.context import CryptContext
 from sqlalchemy import Column, Integer, String, Enum
 from sql_app.database import Base
 
-# Инициализация контекста для хэширования паролей
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
 class RolesEnum(enum.Enum):
     ADMIN = "admin"
     USER = "user"
