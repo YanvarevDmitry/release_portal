@@ -2,9 +2,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from app.auth import get_password_hash
+from auth import pwd_context
 from settings import DbSettings
-from sql_app.database import Base, SessionLocal
+from sql_app.database import Base
 from sql_app.models.releases import ReleaseStage, ReleaseStageEnum
 from sql_app.models.user import User, RolesEnum
 
@@ -15,7 +15,6 @@ Base.metadata.create_all(bind=engine)
 
 
 def populate_releases():
-    session = SessionLocal()
     session = Session(bind=engine)
     try:
         # Пример данных для таблицы ReleaseStage
@@ -42,15 +41,14 @@ def populate_releases():
 
 
 def populate_users():
-    session = SessionLocal()
     session = Session(bind=engine)
     try:
         # Пример данных для таблицы User
-        user1 = User(username="admin", hashed_password=get_password_hash('admin'), email="admin@example.com",
+        user1 = User(username="admin", hashed_password=pwd_context.hash('admin'), email="admin@example.com",
                      role=RolesEnum.ADMIN)
-        user2 = User(username="manager", hashed_password=get_password_hash('manager'),
+        user2 = User(username="manager", hashed_password=pwd_context.hash('manager'),
                      email="release_manager@example.com", role=RolesEnum.RELEASE_MANAGER)
-        user3 = User(username="user", hashed_password=get_password_hash('user'), email="user@example.com",
+        user3 = User(username="user", hashed_password=pwd_context.hash('user'), email="user@example.com",
                      role=RolesEnum.USER)
 
         # Добавление данных в сессию
