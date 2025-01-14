@@ -23,9 +23,9 @@ db_session = Annotated[Session, Depends(get_database)]
 
 @router.post("/", response_model=ReleaseStageOut)
 def create_release(stage: ReleaseStageCreate,
-                         current_user: get_current_user,
-                         db: db_session,
-                         ):
+                   current_user: get_current_user,
+                   db: db_session,
+                   ):
     if current_user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
         raise HTTPException(status_code=403, detail="Not enough permissions")
     if get_release(name=stage.name, db=db):
@@ -40,14 +40,14 @@ def create_release(stage: ReleaseStageCreate,
 
 @router.get("/", response_model=list[ReleaseStageOut])
 def get_all_releases(db: db_session):
-    releases = get_all_releases(db=db)
+    releases = releases_service.get_all_releases(db=db)
     return releases
 
 
 @router.delete("/{stage_id}", status_code=204)
 def delete_release(stage_id: int,
-                         current_user: get_current_user,
-                         db: db_session):
+                   current_user: get_current_user,
+                   db: db_session):
     if current_user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
         raise HTTPException(status_code=403, detail="Not enough permissions")
     release = releases_service.get_release(release_id=stage_id, db=db)
@@ -76,13 +76,13 @@ def generate_report(db: db_session):
 
 @router.put("/{stage_id}")
 def update_release(stage_id: int,
-                         name: str | None,
-                         description: str | None,
-                         start_date: str | None,
-                         end_date: str | None,
-                         current_user: get_current_user,
-                         db: db_session
-                         ):
+                   name: str | None,
+                   description: str | None,
+                   start_date: str | None,
+                   end_date: str | None,
+                   current_user: get_current_user,
+                   db: db_session
+                   ):
     if current_user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
         raise HTTPException(status_code=403, detail="Not enough permissions")
     return update_release(stage_id=stage_id,

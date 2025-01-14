@@ -50,7 +50,7 @@ def get_features(db: Session, feature_id: int | None = None, feature_name: str |
     stmt = stmt.group_by(FeatureType.id)
     if feature_id or feature_name:
         return db.execute(stmt).one_or_none()
-    return db.execute(stmt).all()
+    return db.execute(stmt).mappings().all()
 
 
 def create_feature(name: str, feature_type_id: int, release_id: int, status: str, db: Session):
