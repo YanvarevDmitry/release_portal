@@ -1,10 +1,8 @@
 # Dockerfile
 FROM python:3.11
 
+COPY . /app
 WORKDIR /app
-
-COPY . .
-
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Add this line to run the script for creating tables
