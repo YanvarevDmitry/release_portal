@@ -5,11 +5,8 @@ ENV DATABASE_URL=postgresql://postgres:password@db:5432/postgres
 
 COPY . /
 
-# Install uv
-RUN python -m pip install uv
 
-# Use uv to install dependencies
-RUN uv pip install -r  requirements.txt
+RUN pip install -r  requirements.txt --system
 
 WORKDIR /app
 
