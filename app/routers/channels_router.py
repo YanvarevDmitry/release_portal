@@ -7,13 +7,8 @@ from sql_app import channels_service
 from sql_app.channels_service import get_channel
 from sql_app.database import get_database
 
-# Создание нового экземпляра APIRouter для конечных точек каналов
 router = APIRouter(prefix="/channels", tags=["channels"])
-
-# Зависимость для получения текущего пользователя
 get_current_user = Annotated[User, Depends(get_current_user)]
-
-# Зависимость для получения сессии базы данных
 db_session = Annotated[Session, Depends(get_database)]
 
 
@@ -37,9 +32,9 @@ def create_channel(channel: ChannelCreate,
         ChannelOut: Созданный канал.
     """
     if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Недостаточно прав")
+        raise HTTPException(status_code=403, detail="Not enough permissions")
     if get_channel(name=channel.name, db=db):
-        raise HTTPException(status_code=400, detail="Канал с таким именем уже существует")
+        raise HTTPException(status_code=400, detail="Channel with this name already exists")
     return channels_service.create_channel(name=channel.name, db=db)
 
 
