@@ -18,6 +18,21 @@ db_session = Annotated[Session, Depends(get_database)]
 def create_platform(platform: PlatformCreate,
                     current_user: get_current_user,
                     db: db_session):
+    """
+    Создание новой платформы.
+
+    Args:
+        platform (PlatformCreate): Данные платформы для создания.
+        current_user (User): Текущий аутентифицированный пользователь.
+        db (Session): Сессия базы данных.
+
+    Exceptions:
+        HTTPException: Если у пользователя нет прав администратора.
+        HTTPException: Если платформа с таким именем уже существует.
+
+    Returns:
+        PlatformOut: Созданная платформа.
+    """
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Not enough permissions")
     if get_platform(name=platform.name, db=db):
@@ -27,5 +42,14 @@ def create_platform(platform: PlatformCreate,
 
 @router.get("/", response_model=list[PlatformOut], status_code=200)
 def get_all_platforms(db: db_session):
+    """
+    Получение всех платформ.
+
+    Args:
+        db (Session): Сессия базы данных.
+
+    Returns:
+        list[PlatformOut]: Список всех платформ.
+    """
     platforms = platforms_service.get_all_platforms(db=db)
     return platforms
