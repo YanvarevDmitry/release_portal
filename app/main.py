@@ -20,7 +20,7 @@ app.include_router(channels_router.router)
 app.include_router(platforms_router.router)
 
 
-@app.middleware("http")
+@app.exception_handler(RequestValidationError)
 async def dispatch(request: Request, call_next):
     try:
         response = await call_next(request)
