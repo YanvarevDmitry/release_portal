@@ -42,6 +42,6 @@ def get_all_users(db: Session) -> list[User]:
 
 def delete_user(db: Session, user_id: int):
     stmt = delete(User).where(User.id == user_id).returning(User)
-    user = db.execute(stmt)
+    user = db.execute(stmt).scalar_one()
     db.commit()
     return user

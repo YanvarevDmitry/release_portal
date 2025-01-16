@@ -4,6 +4,7 @@ from typing import List
 from pydantic import BaseModel
 
 from sql_app.models.releases import ReleaseStageEnum
+from sql_app.models.user import RolesEnum
 
 
 # Модели для передачи данных через API
@@ -50,7 +51,7 @@ class UserCreate(BaseModel):
     username: str
     email: str
     password: str
-    role: str
+    role: RolesEnum
 
 
 class UserUpdate(BaseModel):
