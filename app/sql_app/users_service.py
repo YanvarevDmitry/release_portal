@@ -1,6 +1,7 @@
 from sqlalchemy import select, update, delete
 from sqlalchemy.orm import Session
 
+from auth import get_password_hash
 from schemas import UserCreate
 from sql_app.models.user import User
 
@@ -21,15 +22,20 @@ def update_user_email(user_id: int, email: str, db) -> User:
     return user
 
 
-def update_user_role(user_id: int, role: str, db) -> User:
-    stmt = update(User).where(User.id == user_id).values(role=role).returning(User)
+def update_user(user_id: int, db: Session, role: str | None = None, password: str | None = None) -> User:
+    values = {}
+    if role:
+        values['role'] = role
+    if password:
+        values['hashed_password'] = get_password_hash(password)
+    stmt = update(User).where(User.id == user_id).values(**values).returning(User)
     user = db.execute(stmt).first()
     db.commit()
     return user
 
 
 def create_user(user: UserCreate, db: Session) -> User:
-    db_user = User(username=user.username, email=user.email, hashed_password=user.password)
+    db_user = User(username=user.username, email=user.email, hashed_password=get_password_hash(user.password))
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

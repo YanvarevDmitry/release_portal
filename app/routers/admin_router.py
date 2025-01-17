@@ -32,16 +32,18 @@ def create_new_user(user: UserCreate, current_user: get_current_user, db: db_ses
 
 @router.put('/users/{user_id}')
 def update_user(user_id: int,
-                role: RolesEnum,
                 current_user: get_current_user,
-                db: db_session):
+                db: db_session,
+                role: RolesEnum | None = None,
+                password: str | None = None,
+                ):
     if current_user.role != RolesEnum.ADMIN:
         raise HTTPException(status_code=403, detail='Not enough permissions')
     user = get_user(db, user_id=user_id)
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
 
-    return users_service.update_user_role(db=db, user_id=user_id, role=role.value)
+    return users_service.update_user(db=db, user_id=user_id, role=role.value)
 
 
 @router.delete('/users/{user_id}')
