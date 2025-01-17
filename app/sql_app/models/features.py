@@ -10,8 +10,9 @@ class Feature(Base):
     name = Column(String, nullable=False)
     status = Column(String, nullable=False)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
-    release_id = Column(Integer, ForeignKey('releases.id'), nullable=False)
+    release_id = Column(Integer, ForeignKey('releases.id', ondelete='CASCADE'), nullable=False)
     feature_type_id = Column(Integer, nullable=False)
+    creator_id = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'), nullable=False)
 
 
 class FeatureType(Base):

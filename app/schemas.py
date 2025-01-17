@@ -54,6 +54,12 @@ class UserCreate(BaseModel):
     role: RolesEnum
 
 
+class RegisterUser(BaseModel):
+    username: str
+    email: str
+    password: str
+
+
 class UserUpdate(BaseModel):
     username: str = None
     email: str = None
