@@ -4,6 +4,7 @@ from passlib.context import CryptContext
 from sqlalchemy import Column, Integer, String, Enum
 from sql_app.database import Base
 
+
 class RolesEnum(enum.Enum):
     ADMIN = "admin"
     USER = "user"

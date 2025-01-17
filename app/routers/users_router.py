@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from auth import get_current_user
-from schemas import User, UserCreate, RegisterUser
+from schemas import User, UserCreate, RegisterUser, UserOut
 from sql_app import users_service
 from sql_app.database import get_database
 from sql_app.models.user import RolesEnum
@@ -14,7 +14,7 @@ get_current_user = Annotated[User, Depends(get_current_user)]
 db_session = Annotated[Session, Depends(get_database)]
 
 
-@router.get("/me", response_model=User, status_code=200)
+@router.get("/me", response_model=UserOut, status_code=200)
 def get_me(current_user: get_current_user):
     """
     Получение информации о текущем пользователе.

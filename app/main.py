@@ -1,8 +1,12 @@
+import logging
+
 from fastapi import FastAPI
 
 from routers import admin_router, releases_router, auth_router, channels_router, platforms_router, tasks_router, \
     features_router, users_router
 
+# setup loggers
+logging.config.fileConfig('logg_config.py', disable_existing_loggers=False)
 app = FastAPI()
 
 app.include_router(auth_router.router)

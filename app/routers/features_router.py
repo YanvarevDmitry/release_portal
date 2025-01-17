@@ -1,15 +1,14 @@
-import logging
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from auth import get_current_user
-from schemas import User, FeatureTypeOut, FeatureTypeCreate, FeatureOut, FeatureCreate
+from schemas import User, FeatureTypeOut, FeatureTypeCreate, FeatureCreate
 from sql_app import features_service, releases_service, tasks_service
 from sql_app.database import get_database
 from sql_app.models.user import RolesEnum
+from logg_config import logger
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logger.getLogger(__name__)
 
 router = APIRouter(prefix="/feature", tags=["features"])
 get_current_user = Annotated[User, Depends(get_current_user)]
@@ -91,7 +90,7 @@ def delete_feature_type(feature_type_id: int, current_user: get_current_user, db
     return features_service.delete_feature_type(feature_type_id=feature_type_id, db=db)
 
 
-@router.get('/', status_code=200)
+@router.get('/all/', status_code=200)
 def get_all_features(db: db_session, user_id: int | None = None):
     """
     Получение всех фич.

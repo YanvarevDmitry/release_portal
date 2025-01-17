@@ -8,7 +8,9 @@ from schemas import User, PlatformOut, PlatformCreate
 from sql_app import platforms_service
 from sql_app.database import get_database
 from sql_app.platforms_service import get_platform
+from logg_config import logger
 
+logger = logger.getLogger(__name__)
 router = APIRouter(prefix="/platforms", tags=["platforms"])
 get_current_user = Annotated[User, Depends(get_current_user)]
 db_session = Annotated[Session, Depends(get_database)]
@@ -33,11 +35,16 @@ def create_platform(platform: PlatformCreate,
     Returns:
         PlatformOut: Созданная платформа.
     """
+    logger.info("User %s is attempting to create a new platform: %s", current_user.username, platform.name)
     if current_user.role != "admin":
+        logger.warning("User %s does not have enough permissions", current_user.username)
         raise HTTPException(status_code=403, detail="Not enough permissions")
     if get_platform(name=platform.name, db=db):
+        logger.warning("Platform with name %s already exists", platform.name)
         raise HTTPException(status_code=400, detail="Platform with this name already exists")
-    return platforms_service.create_platform(name=platform.name, db=db)
+    new_platform = platforms_service.create_platform(name=platform.name, db=db)
+    logger.info("Platform %s created successfully by user %s", platform.name, current_user.username)
+    return new_platform
 
 
 @router.get("/", response_model=list[PlatformOut], status_code=200)
@@ -51,5 +58,6 @@ def get_all_platforms(db: db_session):
     Returns:
         list[PlatformOut]: Список всех платформ.
     """
+    logger.info("Fetching all platforms")
     platforms = platforms_service.get_all_platforms(db=db)
     return platforms

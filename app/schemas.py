@@ -76,6 +76,16 @@ class User(BaseModel):
         orm_mode = True
 
 
+class UserOut(BaseModel):
+    id: int
+    username: str
+    email: str
+    role: str
+
+    class Config:
+        orm_mode = True
+
+
 class UserInDB(User):
     hashed_password: str
 
