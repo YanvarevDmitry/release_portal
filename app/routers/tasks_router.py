@@ -76,5 +76,4 @@ def get_all_tasks(db: db_session,
     logger.info("Fetching all tasks with filters - feature_id: %s, feature_name: %s, key_name: %s", feature_id,
                 feature_name, key_name)
     task_types = tasks_service.get_all_tasks(db=db, feature_name=feature_name, feature_id=feature_id, key_name=key_name)
-    logger.info("Fetched %d tasks", len(task_types))
     return task_types

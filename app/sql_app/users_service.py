@@ -12,7 +12,7 @@ def get_user(db: Session, username: str | None = None, user_id: int | None = Non
         stmt = stmt.where(User.username == username)
     if user_id:
         stmt = stmt.where(User.id == user_id)
-    return db.execute(stmt).first()
+    return db.execute(stmt).scalar_one_or_none()
 
 
 def update_user_email(user_id: int, email: str, db) -> User:

@@ -14,7 +14,7 @@ get_current_user = Annotated[User, Depends(get_current_user)]
 db_session = Annotated[Session, Depends(get_database)]
 
 
-@router.get("/me", response_model=UserOut, status_code=200)
+@router.get("/me",  status_code=200)
 def get_me(current_user: get_current_user):
     """
     Получение информации о текущем пользователе.
