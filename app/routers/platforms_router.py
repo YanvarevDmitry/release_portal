@@ -8,9 +8,9 @@ from schemas import User, PlatformOut, PlatformCreate
 from sql_app import platforms_service
 from sql_app.database import get_database
 from sql_app.platforms_service import get_platform
-from logg_config import logger
+import logg_config
 
-logger = logger.getLogger(__name__)
+logger = logg_config.get_logger(__name__)
 router = APIRouter(prefix="/platforms", tags=["platforms"])
 get_current_user = Annotated[User, Depends(get_current_user)]
 db_session = Annotated[Session, Depends(get_database)]

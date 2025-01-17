@@ -6,9 +6,9 @@ from schemas import User, FeatureTypeOut, FeatureTypeCreate, FeatureCreate
 from sql_app import features_service, releases_service, tasks_service
 from sql_app.database import get_database
 from sql_app.models.user import RolesEnum
-from logg_config import logger
+import logg_config
 
-logger = logger.getLogger(__name__)
+logger = logg_config.get_logger(__name__)
 
 router = APIRouter(prefix="/feature", tags=["features"])
 get_current_user = Annotated[User, Depends(get_current_user)]

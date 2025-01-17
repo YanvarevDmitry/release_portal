@@ -8,9 +8,9 @@ from schemas import User, TaskTypeOut, TaskTypeCreate
 from sql_app import tasks_service
 from sql_app.database import get_database
 from sql_app.models.user import RolesEnum
-from logg_config import logger
+import logg_config
 
-logger = logger.getLogger(__name__)
+logger = logg_config.get_logger(__name__)
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 get_current_user = Annotated[User, Depends(get_current_user)]
 db_session = Annotated[Session, Depends(get_database)]

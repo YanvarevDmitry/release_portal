@@ -6,9 +6,9 @@ from schemas import User, ChannelOut, ChannelCreate
 from sql_app import channels_service
 from sql_app.channels_service import get_channel
 from sql_app.database import get_database
-from logg_config import logger
+import logg_config
 
-logger = logger.getLogger(__name__)
+logger = logg_config.get_logger(__name__)
 
 router = APIRouter(prefix="/channels", tags=["channels"])
 get_current_user = Annotated[User, Depends(get_current_user)]

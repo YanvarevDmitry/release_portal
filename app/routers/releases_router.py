@@ -16,9 +16,9 @@ from sql_app.platforms_service import get_platform
 from sql_app.releases_service import get_all_releases, update_release, get_release, get_all_release_types
 from schemas import ReleaseStageCreate, User, ReleaseStageOut, ReleaseTypeOut, ReleaseStageOutWithFeature
 from auth import get_current_user
-from logg_config import logger
+import logg_config
 
-logger = logger.getLogger(__name__)
+logger = logg_config.get_logger(__name__)
 router = APIRouter(prefix="/releases", tags=["releases"])
 get_current_user = Annotated[User, Depends(get_current_user)]
 db_session = Annotated[Session, Depends(get_database)]
