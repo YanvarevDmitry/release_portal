@@ -9,7 +9,7 @@ from sql_app.models.channels import Channel
 from sql_app.models.features import FeatureType, FeatureTypeTaskType, Feature
 from sql_app.models.platforms import Platform
 from sql_app.models.releases import Release, ReleaseStageEnum, ReleaseType
-from sql_app.models.tasks import TaskType
+from sql_app.models.task import TaskType
 from sql_app.models.user import User, RolesEnum
 
 engine = create_engine(DbSettings.DB_URL)
