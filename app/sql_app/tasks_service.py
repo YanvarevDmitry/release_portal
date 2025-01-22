@@ -14,11 +14,6 @@ def get_task_type(db: Session, key_name: str | None = None, id: int | None = Non
     return db.execute(stmt).scalar_one_or_none()
 
 
-def get_all_task_types(db: Session):
-    stmt = select(TaskType)
-    return db.execute(stmt).scalars().all()
-
-
 def create_task_type(db: Session,
                      key_name: str,
                      name: str,
@@ -35,11 +30,6 @@ def create_task_type(db: Session,
     return task_type
 
 
-def get_all_task_types(db: Session):
-    stmt = select(TaskType)
-    return db.execute(stmt).scalars().all()
-
-
 def delete_task_type(task_type_id: int, db: Session):
     stmt = delete(TaskType).where(TaskType.id == task_type_id).returning(TaskType)
     db.execute(stmt)
@@ -47,10 +37,10 @@ def delete_task_type(task_type_id: int, db: Session):
     return None
 
 
-def get_all_tasks(db: Session,
-                  feature_id: int | None = None,
-                  feature_name: str | None = None,
-                  key_name: str | None = None):
+def get_all_task_types(db: Session,
+                       feature_id: int | None = None,
+                       feature_name: str | None = None,
+                       key_name: str | None = None):
     stmt = select(TaskType)
     if feature_id or feature_name:
         stmt = stmt.join(FeatureTypeTaskType, FeatureTypeTaskType.task_type_id == TaskType.id)
@@ -77,4 +67,23 @@ def create_task(feature_id: int, task_type_id: int, status: str, db: Session):
     db.add(task)
     db.commit()
     db.refresh(task)
+    return None
+
+
+def get_task_for_feature(db: Session, feature_id: int):
+    stmt = select(Tasks, func.array_agg(func.json_build_object('id', TaskType.id,
+                                                               'key_name', TaskType.key_name,
+                                                               'name', TaskType.name,
+                                                               'description', TaskType.description,
+                                                               'is_required', TaskType.is_required)).label(
+        'task_type'))
+    stmt = stmt.join(TaskType, TaskType.id == Tasks.task_type_id)
+    stmt = stmt.where(Tasks.feature_id == feature_id)
+    return db.execute(stmt).all()
+
+
+def delete_task(task_id: int, db: Session):
+    stmt = delete(Tasks).where(Tasks.id == task_id).returning(Tasks)
+    db.execute(stmt)
+    db.commit()
     return None

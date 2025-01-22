@@ -1,4 +1,4 @@
-from sqlalchemy import select, func, delete
+from sqlalchemy import select, func, delete, update
 from sqlalchemy.orm import Session
 
 from sql_app.models.features import FeatureType, FeatureTypeTaskType, Feature
@@ -58,6 +58,11 @@ def get_features(db: Session,
     return db.execute(stmt).mappings().all()
 
 
+def get_feature(feature_id: int, db: Session) -> Feature:
+    stmt = select(Feature).where(Feature.id == feature_id)
+    return db.execute(stmt).mappings().first()
+
+
 def create_feature(user_id: int, name: str, feature_type_id: int, release_id: int, status: str, db: Session):
     feature = Feature(creator_id=user_id,
                       name=name,
@@ -68,3 +73,24 @@ def create_feature(user_id: int, name: str, feature_type_id: int, release_id: in
     db.commit()
     db.refresh(feature)
     return feature
+
+
+def update_feature(db: Session,
+                   feature_id: int | None = None,
+                   name: str | None = None,
+                   feature_type_id: int | None = None,
+                   release_id: int | None = None,
+                   status: str | None = None
+                   ):
+    stmt = update(Feature).where(Feature.id == feature_id).returning(Feature)
+    if name:
+        stmt = stmt.values(name=name)
+    if feature_type_id:
+        stmt = stmt.values(feature_type_id=feature_type_id)
+    if release_id:
+        stmt = stmt.values(release_id=release_id)
+    if status:
+        stmt = stmt.values(status=status)
+    result = db.execute(stmt).scalar()
+    db.commit()
+    return result
