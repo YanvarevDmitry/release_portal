@@ -6,10 +6,10 @@ from auth import pwd_context
 from settings import DbSettings
 from sql_app.database import Base
 from sql_app.models.channels import Channel
-from sql_app.models.features import FeatureType, FeatureTypeTaskType
+from sql_app.models.features import FeatureType, FeatureTypeTaskType, Feature
 from sql_app.models.platforms import Platform
 from sql_app.models.releases import Release, ReleaseStageEnum, ReleaseType
-from sql_app.models.tasks import TaskType
+from sql_app.models.task import TaskType
 from sql_app.models.user import User, RolesEnum
 
 engine = create_engine(DbSettings.DB_URL)
@@ -167,6 +167,19 @@ def populate_feature_type_task_types():
         session.close()
 
 
+def populate_features():
+    session = Session(bind=engine)
+    try:
+        feature1 = Feature(name='Доработка приложения android', status='open', release_id=1, feature_type_id=1,
+                           creator_id=3)
+        feature2 = Feature(name='Доработка приложения ios', status='open', release_id=2, feature_type_id=1,
+                           creator_id=3)
+        session.add_all([feature1, feature2])
+        session.commit()
+    finally:
+        session.close()
+
+
 # Вызов функции для создания релизов
 populate_users()
 populate_platforms()
@@ -176,3 +189,4 @@ populate_releases()
 populate_task_types()
 populate_feature_types()
 populate_feature_type_task_types()
+populate_features()

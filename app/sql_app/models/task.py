@@ -13,7 +13,7 @@ class TaskType(Base):
     is_required = Column(Boolean, nullable=False, server_default='true')
 
 
-class Tasks(Base):
+class Task(Base):
     __tablename__ = 'tasks'
 
     id = Column(Integer, primary_key=True, index=True)

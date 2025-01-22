@@ -2,7 +2,7 @@ from sqlalchemy import select, func, delete, update
 from sqlalchemy.orm import Session
 
 from sql_app.models.features import FeatureType, FeatureTypeTaskType, Feature
-from sql_app.models.tasks import TaskType, Tasks
+from sql_app.models.task import TaskType, Task
 
 
 def get_feature_type(db: Session, name: str | None = None, feature_type_id: int | None = None):
@@ -43,11 +43,11 @@ def get_features(db: Session,
                  feature_name: str | None = None,
                  user_id: int | None = None
                  ):
-    stmt = select(Feature, func.array_agg(func.json_build_object('id', Tasks.id,
-                                                                 'feature_id', Tasks.feature_id,
-                                                                 'task_type_id', Tasks.task_type_id,
-                                                                 'status', Tasks.status)).label('tasks'))
-    stmt = stmt.join(Tasks, Tasks.feature_id == Feature.id)
+    stmt = select(Feature, func.array_agg(func.json_build_object('id', Task.id,
+                                                                 'feature_id', Task.feature_id,
+                                                                 'task_type_id', Task.task_type_id,
+                                                                 'status', Task.status)).label('tasks'))
+    stmt = stmt.join(Task, Task.feature_id == Feature.id)
     if feature_id:
         stmt = stmt.where(Feature.id == feature_id)
     if feature_name:
