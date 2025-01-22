@@ -92,6 +92,6 @@ def update_feature(db: Session,
     if status:
         stmt = stmt.values(status=status)
     stmt = stmt.returning(Feature)
-    result = db.execute(stmt).scalar()
+    result = db.execute(stmt).scalar_one()
     db.commit()
     return result

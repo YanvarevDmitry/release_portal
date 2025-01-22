@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from auth import get_current_user
-from schemas import User, FeatureTypeOut, FeatureTypeCreate, FeatureCreate
+from schemas import User, FeatureTypeOut, FeatureTypeCreate, FeatureCreate, FeatureOut
 from sql_app import features_service, releases_service, tasks_service
 from sql_app.database import get_database
 from sql_app.models.user import RolesEnum
@@ -165,7 +165,7 @@ def create_feature(feature: FeatureCreate, user: get_current_user, db: db_sessio
     return features_service.get_features(feature_id=feature.id, db=db)
 
 
-@router.patch('/{feature_id}/type/{feature_type_id}', status_code=200)
+@router.patch('/{feature_id}/type/{feature_type_id}',response_model=FeatureOut, status_code=200)
 def change_feature_type(feature_id: int, feature_type_id: int, user: get_current_user, db: db_session):
     """
     Изменение типа фичи.
@@ -200,7 +200,7 @@ def change_feature_type(feature_id: int, feature_type_id: int, user: get_current
     tasks = tasks_service.get_task_for_feature(feature_id=feature_id, db=db)
     for task in tasks:
         if task.Task.status == 'done':
-            task_name = task.get('task_type').get('name')
+            task_name = task.task_type.get('name')
             logger.warning("Task %s is done", task_name)
             raise HTTPException(status_code=400, detail=f"Task {task_name} is done. Cant change feature type")
 
@@ -220,7 +220,7 @@ def change_feature_type(feature_id: int, feature_type_id: int, user: get_current
     return features_service.update_feature(feature_id=feature_id, feature_type_id=feature_type_id, db=db)
 
 
-@router.patch('/{feature_id}/release/{release_id}', status_code=200)
+@router.patch('/{feature_id}/release/{release_id}',response_model=FeatureOut, status_code=200)
 def change_feature_release(feature_id: int, release_id: int, user: get_current_user, db: db_session):
     """
     Изменение релиза фичи.
@@ -240,6 +240,8 @@ def change_feature_release(feature_id: int, release_id: int, user: get_current_u
     if not feature:
         logger.warning("Feature not found with ID: %d", feature_id)
         raise HTTPException(status_code=404, detail="Feature not found")
+    if release_id == feature.release_id:
+        return feature
     release = releases_service.get_release(release_id=release_id, db=db)
     if not release:
         logger.warning("Release not found with ID: %d", release_id)
@@ -253,4 +255,11 @@ def change_feature_release(feature_id: int, release_id: int, user: get_current_u
     if feature.creator_id != user.id:
         if user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
             raise HTTPException(status_code=403, detail="Not enough permissions")
-    return features_service.update_feature(feature_id=feature_id, release_id=release_id, db=db)
+    feature = features_service.update_feature(feature_id=feature_id, release_id=release_id, db=db)
+    # result = FeatureOut(id=feature.id,
+    #                     name=feature.name,
+    #                     status=feature.status,
+    #                     created_at=feature.created_at,
+    #                     feature_type_id=feature.feature_type_id,
+    #                     release_id=feature.release_id)
+    return feature
