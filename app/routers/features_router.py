@@ -216,7 +216,7 @@ def change_feature_type(feature_id: int, feature_type_id: int, user: get_current
     for task_id in tasks_to_create:
         if task_id not in [task.Task.task_type_id for task in tasks]:
             tasks_service.create_task(feature_id=feature_id, task_type_id=task_id, status='open', db=db)
-
+    logger.info('User %s change feature %d type to %d', user.username, feature_id, feature_type_id)
     return features_service.update_feature(feature_id=feature_id, feature_type_id=feature_type_id, db=db)
 
 
@@ -256,10 +256,5 @@ def change_feature_release(feature_id: int, release_id: int, user: get_current_u
         if user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
             raise HTTPException(status_code=403, detail="Not enough permissions")
     feature = features_service.update_feature(feature_id=feature_id, release_id=release_id, db=db)
-    # result = FeatureOut(id=feature.id,
-    #                     name=feature.name,
-    #                     status=feature.status,
-    #                     created_at=feature.created_at,
-    #                     feature_type_id=feature.feature_type_id,
-    #                     release_id=feature.release_id)
+    logger.info("User %s move feature %d to enw release %d", user.username, feature_id, release_id)
     return feature
