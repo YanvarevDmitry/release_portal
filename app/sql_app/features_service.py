@@ -82,7 +82,7 @@ def update_feature(db: Session,
                    release_id: int | None = None,
                    status: str | None = None
                    ):
-    stmt = update(Feature).where(Feature.id == feature_id).returning(Feature)
+    stmt = update(Feature).where(Feature.id == feature_id)
     if name:
         stmt = stmt.values(name=name)
     if feature_type_id:
@@ -91,6 +91,7 @@ def update_feature(db: Session,
         stmt = stmt.values(release_id=release_id)
     if status:
         stmt = stmt.values(status=status)
+    stmt = stmt.returning(Feature)
     result = db.execute(stmt).scalar()
     db.commit()
     return result

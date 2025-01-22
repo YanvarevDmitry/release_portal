@@ -199,7 +199,7 @@ def change_feature_type(feature_id: int, feature_type_id: int, user: get_current
     # Проверим, что нет закрытых доров
     tasks = tasks_service.get_task_for_feature(feature_id=feature_id, db=db)
     for task in tasks:
-        if task.status == 'done':
+        if task.Tasks.status == 'done':
             task_name = task.get('task_type').get('name')
             logger.warning("Task %s is done", task_name)
             raise HTTPException(status_code=400, detail=f"Task {task_name} is done. Cant change feature type")
