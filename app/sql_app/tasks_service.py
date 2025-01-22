@@ -1,4 +1,4 @@
-from sqlalchemy import select, delete, func, and_
+from sqlalchemy import select, delete, func, and_, update
 from sqlalchemy.orm import Session
 
 from sql_app.models.features import FeatureTypeTaskType, Feature, FeatureType
@@ -72,10 +72,10 @@ def create_task(feature_id: int, task_type_id: int, status: str, db: Session):
 
 def get_task_for_feature(db: Session, feature_id: int):
     stmt = select(Task, func.array_agg(func.json_build_object('id', TaskType.id,
-                                                               'key_name', TaskType.key_name,
-                                                               'name', TaskType.name,
-                                                               'description', TaskType.description,
-                                                               'is_required', TaskType.is_required)).label(
+                                                              'key_name', TaskType.key_name,
+                                                              'name', TaskType.name,
+                                                              'description', TaskType.description,
+                                                              'is_required', TaskType.is_required)).label(
         'task_type'))
     stmt = stmt.join(TaskType, TaskType.id == Task.task_type_id)
     stmt = stmt.where(Task.feature_id == feature_id)
@@ -89,3 +89,15 @@ def delete_task(feature_id: int, task_type_id: int, db: Session):
     db.execute(stmt)
     db.commit()
     return None
+
+
+def update_task(task_id: int, status: str, db: Session):
+    stmt = update(Task).where(Task.id == task_id).values(status=status).returning(Task)
+    result = db.execute(stmt).scalar()
+    db.commit()
+    return result
+
+
+def get_task(task_id: int, db: Session):
+    stmt = select(Task).where(Task.id == task_id)
+    return db.execute(stmt).scalar_one_or_none()
