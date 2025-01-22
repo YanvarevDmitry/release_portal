@@ -165,7 +165,7 @@ def create_feature(feature: FeatureCreate, user: get_current_user, db: db_sessio
     return features_service.get_features(feature_id=feature.id, db=db)
 
 
-@router.patch('/{feature_id}/type/{feature_type_id}',response_model=FeatureOut, status_code=200)
+@router.patch('/{feature_id}/type/{feature_type_id}', response_model=FeatureOut, status_code=200)
 def change_feature_type(feature_id: int, feature_type_id: int, user: get_current_user, db: db_session):
     """
     Изменение типа фичи.
@@ -220,7 +220,7 @@ def change_feature_type(feature_id: int, feature_type_id: int, user: get_current
     return features_service.update_feature(feature_id=feature_id, feature_type_id=feature_type_id, db=db)
 
 
-@router.patch('/{feature_id}/release/{release_id}',response_model=FeatureOut, status_code=200)
+@router.patch('/{feature_id}/release/{release_id}', response_model=FeatureOut, status_code=200)
 def change_feature_release(feature_id: int, release_id: int, user: get_current_user, db: db_session):
     """
     Изменение релиза фичи.
