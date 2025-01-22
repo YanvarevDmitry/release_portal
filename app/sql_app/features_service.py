@@ -60,7 +60,7 @@ def get_features(db: Session,
 
 def get_feature(feature_id: int, db: Session) -> Feature:
     stmt = select(Feature).where(Feature.id == feature_id)
-    return db.execute(stmt).mappings().first()
+    return db.execute(stmt).scalar_one_or_none()
 
 
 def create_feature(user_id: int, name: str, feature_type_id: int, release_id: int, status: str, db: Session):

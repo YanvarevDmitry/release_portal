@@ -79,6 +79,7 @@ def get_task_for_feature(db: Session, feature_id: int):
         'task_type'))
     stmt = stmt.join(TaskType, TaskType.id == Tasks.task_type_id)
     stmt = stmt.where(Tasks.feature_id == feature_id)
+    stmt = stmt.gtpup_by(Tasks.id)
     return db.execute(stmt).all()
 
 

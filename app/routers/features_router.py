@@ -192,10 +192,10 @@ def change_feature_type(feature_id: int, feature_type_id: int, user: get_current
     if not features_service.get_feature_type(feature_type_id=feature_type_id, db=db):
         logger.warning("Feature type not found with ID: %d", feature_type_id)
         raise HTTPException(status_code=404, detail="Feature type not found")
-    # Проверим что пытается поменять либо создатель фичи, либо менеджер и админ.from
-    if feature.user_id != user.id or user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
-        raise HTTPException(status_code=403, detail="Not enough permissions")
-
+    # Проверим что пытается поменять либо создатель фичи, либо менеджер и админ.
+    if feature.creator_id != user.id:
+        if user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
+            raise HTTPException(status_code=403, detail="Not enough permissions")
     # Проверим, что нет закрытых доров
     tasks = tasks_service.get_task_for_feature(feature_id=feature_id, db=db)
     for task in tasks:
@@ -249,6 +249,7 @@ def change_feature_release(feature_id: int, release_id: int, user: get_current_u
     if feature.status == 'done':
         logger.warning("Feature is done")
         raise HTTPException(status_code=400, detail="Feature is done. Cant change feature release")
-    if feature.user_id != user.id or user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
-        raise HTTPException(status_code=403, detail="Not enough permissions")
+    if feature.creator_id != user.id:
+        if user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
+            raise HTTPException(status_code=403, detail="Not enough permissions")
     return features_service.update_feature(feature_id=feature_id, release_id=release_id, db=db)
