@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, func
 
 from sql_app.database import Base
 
@@ -20,3 +20,13 @@ class Task(Base):
     feature_id = Column(Integer, ForeignKey('features.id'), nullable=False)
     task_type_id = Column(Integer, ForeignKey('task_types.id'), nullable=False)
     status = Column(String, nullable=False)
+
+
+class AttachmentLink(Base):
+    __tablename__ = 'attachment_links'
+
+    id = Column(Integer, primary_key=True, index=True)
+    task_id = Column(Integer, ForeignKey('tasks.id'), nullable=False)
+    link = Column(String, nullable=False)
+    uploaded_at = Column(DateTime, nullable=False, server_default=func.now())
+    uploaded_by = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'), nullable=False)
