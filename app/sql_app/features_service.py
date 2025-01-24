@@ -38,6 +38,39 @@ def delete_feature_type(feature_type_id: int, db: Session):
     return None
 
 
+def get_all_features_pagination(db: Session,
+                                page: int = 1,
+                                page_size: int | None = None,
+                                user_id: int | None = None
+                                ):
+    task_attachments = select(AttachmentLink.task_id, func.json_build_object('id', AttachmentLink.id,
+                                                                             'link', AttachmentLink.link,
+                                                                             'uploadet_at', AttachmentLink.uploaded_at,
+                                                                             'uploaded_by',
+                                                                             AttachmentLink.uploaded_by).label(
+        'attachments'))
+    task_attachments_cte = task_attachments.cte('task_attachments_cte')
+    stmt = select(Feature, func.array_agg(func.json_build_object('id', Task.id,
+                                                                 'feature_id', Task.feature_id,
+                                                                 'task_type_id', Task.task_type_id,
+                                                                 'status', Task.status,
+                                                                 'attachments',
+                                                                 task_attachments_cte.c.attachments)).label('tasks'))
+    stmt = stmt.join(Task, Task.feature_id == Feature.id)
+    stmt = stmt.join(task_attachments_cte, task_attachments_cte.c.task_id == Task.id, isouter=True)
+    if user_id:
+        stmt = stmt.where(Feature.creator_id == user_id)
+    # Защита от дурака
+    if page == 0:
+        page = 1
+    total = db.execute(select(func.count()).select_from(stmt.subquery())).scalar()
+    stmt = stmt.offset((page - 1) * page_size)
+    stmt = stmt.limit(page_size)
+    stmt = stmt.group_by(Feature.id)
+    result = db.execute(stmt).mappings().all()
+    return result, len(result), total
+
+
 def get_features(db: Session,
                  feature_id: int | None = None,
                  feature_name: str | None = None,

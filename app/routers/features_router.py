@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from auth import get_current_user
-from schemas import User, FeatureTypeOut, FeatureTypeCreate, FeatureCreate, FeatureOut
+from schemas import User, FeatureTypeOut, FeatureTypeCreate, FeatureCreate, FeatureOut, PaginationFeatures
 from sql_app import features_service, releases_service, tasks_service
 from sql_app.database import get_database
 from sql_app.models.user import RolesEnum
@@ -90,20 +90,33 @@ def delete_feature_type(feature_type_id: int, current_user: get_current_user, db
     return features_service.delete_feature_type(feature_type_id=feature_type_id, db=db)
 
 
-@router.get('/all/', status_code=200)
-def get_all_features(db: db_session, user_id: int | None = None):
+@router.get('/all/', response_model=PaginationFeatures, status_code=200)
+def get_all_features(db: db_session,
+                     user_id: int | None = None,
+                     page: int | None = None,
+                     page_size: int | None = None):
     """
     Получение всех фич.
 
     Args:
         db (Session): Сессия базы данных.
         user_id (int, optional): ID пользователя для фильтрации фич.
+        page: (int, optional): Номер страницы.
+        page_size: (int, optional): Размер страницы.
 
     Returns:
         list[FeatureOut]: Список всех фич.
     """
     logger.info("Getting all features")
-    return features_service.get_features(db=db)
+    data, page_size, total = features_service.get_all_features_pagination(db=db,
+                                                                          page=page,
+                                                                          page_size=page_size,
+                                                                          user_id=user_id)
+
+    return {'data': data,
+            'page_size': page_size,
+            'total': total
+            }
 
 
 @router.get("/", status_code=200)

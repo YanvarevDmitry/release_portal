@@ -1,6 +1,5 @@
 import datetime
 import enum
-from typing import List
 
 from pydantic import BaseModel
 
@@ -8,7 +7,12 @@ from sql_app.models.releases import ReleaseStageEnum
 from sql_app.models.user import RolesEnum
 
 
-# Модели для передачи данных через API
+class BasePagination(BaseModel):
+    page: int
+    page_size: int
+    total: int
+
+
 class ReleaseStageCreate(BaseModel):
     name: str
     description: str
@@ -212,6 +216,13 @@ class AttachmentOut(BaseModel):
     task_id: int
     uploaded_at: datetime.datetime
     uploaded_by: int
+
+    class Config:
+        orm_mode = True
+
+
+class PaginationFeatures(BasePagination):
+    data: list[FeatureOut]
 
     class Config:
         orm_mode = True
