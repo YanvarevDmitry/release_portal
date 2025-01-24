@@ -104,10 +104,10 @@ def upload_attachment(task_id: int, link: str, current_user: get_current_user, d
         logger.warning("Task not found with ID: %d", task_id)
         raise HTTPException(status_code=404, detail="Task not found")
     logger.info('User %s uploaded attachment link %s for task with ID: %d', current_user.username, link, task_id)
-    if task.status == TaskEnum.DONE:
+    if task.status == TaskEnum.DONE.value:
         logger.warning("Task with ID: %d is already done", task_id)
         raise HTTPException(status_code=400, detail="Task is already done")
-    if task.status == TaskEnum.OPEN:
+    if task.status == TaskEnum.OPEN.value:
         tasks_service.update_task(task_id=task_id, status=TaskEnum.IN_PROGRESS.value, db=db)
     if not link.startswith("http://") and not link.startswith("https://"):
         logger.warning("Invalid link: %s", link)
