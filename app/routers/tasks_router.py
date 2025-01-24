@@ -109,4 +109,7 @@ def upload_attachment(task_id: int, link: str, current_user: get_current_user, d
         raise HTTPException(status_code=400, detail="Task is already done")
     if task.status == TaskEnum.OPEN:
         tasks_service.update_task(task_id=task_id, status=TaskEnum.IN_PROGRESS.value, db=db)
+    if not link.startswith("http://") and not link.startswith("https://"):
+        logger.warning("Invalid link: %s", link)
+        raise HTTPException(status_code=400, detail="Invalid link")
     return tasks_service.create_attachment(task_id=task_id, link=link, user_id=current_user.id, db=db)
