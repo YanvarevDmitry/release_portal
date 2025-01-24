@@ -90,11 +90,11 @@ def delete_feature_type(feature_type_id: int, current_user: get_current_user, db
     return features_service.delete_feature_type(feature_type_id=feature_type_id, db=db)
 
 
-@router.get('/all/', response_model=PaginationFeatures, status_code=200)
+@router.get('/all/', status_code=200)
 def get_all_features(db: db_session,
                      user_id: int | None = None,
-                     page: int | None = None,
-                     page_size: int | None = None):
+                     page: int = 1,
+                     page_size: int = 50):
     """
     Получение всех фич.
 
@@ -166,6 +166,9 @@ def create_feature(feature: FeatureCreate, user: get_current_user, db: db_sessio
     if not releases_service.get_release(release_id=feature.release_id, db=db):
         logger.warning("Release not found with ID: %d", feature.release_id)
         raise HTTPException(status_code=404, detail="Release not found")
+    if not features_service.get_feature_type(feature_type_id=feature.feature_type_id, db=db):
+        logger.warning("Feature type not found with ID: %d", feature.feature_type_id)
+        raise HTTPException(status_code=404, detail="Feature type not found")
     feature = features_service.create_feature(name=feature.name,
                                               user_id=user.id,
                                               feature_type_id=feature.feature_type_id,

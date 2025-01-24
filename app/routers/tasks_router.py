@@ -68,19 +68,6 @@ def delete_task_type(task_type_id: int, current_user: get_current_user, db: db_s
     return None
 
 
-@router.get('/', response_model=list[TaskTypeOut], status_code=200)
-def get_all_tasks(db: db_session,
-                  feature_id: int | None = None,
-                  feature_name: str | None = None,
-                  key_name: str | None = None):
-    logger.info("Fetching all tasks with filters - feature_id: %s, feature_name: %s, key_name: %s", feature_id,
-                feature_name, key_name)
-    task_types = tasks_service.get_all_task_types(db=db,
-                                                  feature_name=feature_name,
-                                                  feature_id=feature_id,
-                                                  key_name=key_name)
-    return task_types
-
 
 @router.patch('/{task_id}', response_model=TaskOut, status_code=200)
 def update_task(task_id: int,

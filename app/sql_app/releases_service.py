@@ -27,7 +27,7 @@ def get_release(db: Session, name: str | None = None, release_id: int | None = N
     stmt = select(Release)
     if name:
         stmt = stmt.where(Release.name == name)
-    if release_id:
+    if release_id is not None:
         stmt = stmt.where(Release.id == release_id)
     return db.execute(stmt).scalar_one_or_none()
 
