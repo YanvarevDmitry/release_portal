@@ -60,13 +60,13 @@ def get_all_features_pagination(db: Session,
     stmt = stmt.join(task_attachments_cte, task_attachments_cte.c.task_id == Task.id, isouter=True)
     if user_id:
         stmt = stmt.where(Feature.creator_id == user_id)
+    stmt = stmt.group_by(Feature.id)
     # Защита от дурака
     if page == 0:
         page = 1
     total = db.execute(select(func.count()).select_from(stmt.subquery())).scalar()
     stmt = stmt.offset((page - 1) * page_size)
     stmt = stmt.limit(page_size)
-    stmt = stmt.group_by(Feature.id)
     result = db.execute(stmt).mappings().all()
     return result, len(result), total
 
