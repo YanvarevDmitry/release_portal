@@ -43,16 +43,16 @@ def get_features(db: Session,
                  feature_name: str | None = None,
                  user_id: int | None = None
                  ):
-    task_attachments = select(AttachmentLink.id,
-                              AttachmentLink.link,
-                              AttachmentLink.uploaded_at,
-                              AttachmentLink.uploaded_by).label('attachments')
+    task_attachments = select(AttachmentLink.task_id, func.json_build_object('id',AttachmentLink.id,
+                              'link',AttachmentLink.link,
+                              'uploadet_at',AttachmentLink.uploaded_at,
+                              'uploaded_by',AttachmentLink.uploaded_by).label('attachments'))
     task_attachments_cte = task_attachments.cte('task_attachments_cte')
     stmt = select(Feature, func.array_agg(func.json_build_object('id', Task.id,
                                                                  'feature_id', Task.feature_id,
                                                                  'task_type_id', Task.task_type_id,
                                                                  'status', Task.status,
-                                                                 'attachments', task_attachments_cte)).label('tasks'))
+                                                                 'attachments', task_attachments_cte.c.attachments)).label('tasks'))
     stmt = stmt.join(Task, Task.feature_id == Feature.id)
     stmt = stmt.join(task_attachments_cte, task_attachments_cte.c.task_id == Task.id, isouter=True)
     if feature_id:
