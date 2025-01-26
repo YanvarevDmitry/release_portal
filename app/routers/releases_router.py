@@ -30,7 +30,7 @@ def create_release(stage: ReleaseStageCreate,
                    db: db_session,
                    ):
     logger.info("User %s is attempting to create a new release: %s", current_user.username, stage.name)
-    if current_user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
+    if current_user.role not in [RolesEnum.ADMIN.value, RolesEnum.RELEASE_MANAGER.value]:
         logger.warning("User %s does not have enough permissions", current_user.username)
         raise HTTPException(status_code=403, detail="Not enough permissions")
     if get_release(name=stage.name, db=db):
@@ -71,7 +71,7 @@ def delete_release(release_id: int,
                    current_user: get_current_user,
                    db: db_session):
     logger.info("User %s is attempting to delete release with ID: %d", current_user.username, release_id)
-    if current_user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
+    if current_user.role not in [RolesEnum.ADMIN.value, RolesEnum.RELEASE_MANAGER.value]:
         logger.warning("User %s does not have enough permissions", current_user.username)
         raise HTTPException(status_code=403, detail="Not enough permissions")
     release = releases_service.get_release(release_id=release_id, db=db)
@@ -122,7 +122,7 @@ def update_release(stage_id: int,
                    current_user: get_current_user,
                    db: db_session):
     logger.info("User %s is attempting to update release with ID: %d", current_user.username, stage_id)
-    if current_user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
+    if current_user.role not in [RolesEnum.ADMIN.value, RolesEnum.RELEASE_MANAGER.value]:
         logger.warning("User %s does not have enough permissions", current_user.username)
         raise HTTPException(status_code=403, detail="Not enough permissions")
     updated_release = update_release(stage_id=stage_id,
@@ -149,7 +149,7 @@ def create_release_type(name: str,
                         current_user: get_current_user,
                         db: db_session):
     logger.info("User %s is attempting to create a new release type: %s", current_user.username, name)
-    if current_user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
+    if current_user.role not in [RolesEnum.ADMIN.value, RolesEnum.RELEASE_MANAGER.value]:
         logger.warning("User %s does not have enough permissions", current_user.username)
         raise HTTPException(status_code=403, detail="Not enough permissions")
     if not get_platform(platform_id=platform_id, db=db):

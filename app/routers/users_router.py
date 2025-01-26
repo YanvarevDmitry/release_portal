@@ -43,5 +43,5 @@ def register(user: RegisterUser, db: db_session):
 	db_user = users_service.get_user(username=user.username, db=db)
 	if db_user:
 		raise HTTPException(status_code=400, detail="Username already registered")
-	new_user = UserCreate(username=user.username, password=user.password, email=user.email, role=RolesEnum.USER)
+	new_user = UserCreate(username=user.username, password=user.password, email=user.email, role=RolesEnum.USER.value)
 	return users_service.create_user(user=new_user, db=db)

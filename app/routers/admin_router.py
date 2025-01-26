@@ -17,14 +17,14 @@ db_session = Annotated[Session, Depends(get_database)]
 
 @router.get('/users')
 def get_users(current_user: get_current_user, db: db_session):
-    if current_user.role != RolesEnum.ADMIN:
+    if current_user.role != RolesEnum.ADMIN.value:
         raise HTTPException(status_code=403, detail='Not enough permissions')
     return get_all_users(db=db)
 
 
 @router.post('/users')
 def create_new_user(user: UserCreate, current_user: get_current_user, db: db_session):
-    if current_user.role != RolesEnum.ADMIN:
+    if current_user.role != RolesEnum.ADMIN.value:
         raise HTTPException(status_code=403, detail='Not enough permissions')
 
     return create_user(user=user, db=db)
@@ -37,7 +37,7 @@ def update_user(user_id: int,
                 role: RolesEnum | None = None,
                 password: str | None = None,
                 ):
-    if current_user.role != RolesEnum.ADMIN:
+    if current_user.role != RolesEnum.ADMIN.value:
         raise HTTPException(status_code=403, detail='Not enough permissions')
     user = get_user(db, user_id=user_id)
     if not user:
@@ -48,7 +48,7 @@ def update_user(user_id: int,
 
 @router.delete('/users/{user_id}')
 def delete_user(user_id: int, current_user: get_current_user, db: Session = Depends(get_database)):
-    if current_user.role != RolesEnum.ADMIN:
+    if current_user.role != RolesEnum.ADMIN.value:
         raise HTTPException(status_code=403, detail='Not enough permissions')
     user = get_user(db, user_id=user_id)
     if not user:

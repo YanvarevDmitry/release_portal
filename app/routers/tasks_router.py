@@ -21,7 +21,7 @@ def create_task_type(task: TaskTypeCreate,
                      current_user: get_current_user,
                      db: db_session):
     logger.info("User %s is attempting to create a new task type: %s", current_user.username, task.key_name)
-    if current_user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
+    if current_user.role not in [RolesEnum.ADMIN.value, RolesEnum.RELEASE_MANAGER.value]:
         logger.warning("User %s does not have enough permissions", current_user.username)
         raise HTTPException(status_code=403, detail="Not enough permissions")
     if tasks_service.get_task_type(key_name=task.key_name, db=db):
@@ -57,7 +57,7 @@ def get_all_task_type(db: db_session):
 @router.delete("/types/{task_type_id}", status_code=204)
 def delete_task_type(task_type_id: int, current_user: get_current_user, db: db_session):
     logger.info("User %s is attempting to delete task type with ID: %d", current_user.username, task_type_id)
-    if current_user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
+    if current_user.role not in [RolesEnum.ADMIN.value, RolesEnum.RELEASE_MANAGER.value]:
         logger.warning("User %s does not have enough permissions", current_user.username)
         raise HTTPException(status_code=403, detail="Not enough permissions")
     if not tasks_service.get_task_type(id=task_type_id, db=db):
@@ -74,7 +74,7 @@ def update_task(task_id: int,
                 status: TaskEnum,
                 current_user: get_current_user,
                 db: db_session):
-    if current_user.role not in [RolesEnum.ADMIN, RolesEnum.RELEASE_MANAGER]:
+    if current_user.role not in [RolesEnum.ADMIN.value, RolesEnum.RELEASE_MANAGER.value]:
         logger.warning("User %s does not have enough permissions", current_user.username)
         raise HTTPException(status_code=403, detail="Only admin or release manager can update task")
     if not tasks_service.get_task(task_id=task_id, db=db):
