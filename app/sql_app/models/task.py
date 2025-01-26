@@ -30,3 +30,10 @@ class AttachmentLink(Base):
     link = Column(String, nullable=False)
     uploaded_at = Column(DateTime, nullable=False, server_default=func.now())
     uploaded_by = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'), nullable=False)
+
+
+class TaskTypeApprover(Base):
+    __tablename__ = 'task_type_approvers'
+
+    task_type_id = Column(Integer, ForeignKey('task_types.id', ondelete='CASCADE'), nullable=False)
+    role_id = Column(Integer, ForeignKey('roles.id', ondelete='CASCADE'), nullable=False)

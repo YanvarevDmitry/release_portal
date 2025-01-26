@@ -9,7 +9,7 @@ from sql_app.models.channels import Channel
 from sql_app.models.features import FeatureType, FeatureTypeTaskType, Feature
 from sql_app.models.platforms import Platform
 from sql_app.models.releases import Release, ReleaseStageEnum, ReleaseType
-from sql_app.models.task import TaskType
+from sql_app.models.task import TaskType, TaskTypeApprover
 from sql_app.models.user import User, RolesEnum, Role
 
 engine = create_engine(DbSettings.DB_URL)
@@ -48,9 +48,11 @@ def populate_users():
                      role=RolesEnum.USER.value)
         user4 = User(username="reviewer", hashed_password=pwd_context.hash('reviewer'), email="reviewer@example.com",
                      role=RolesEnum.REVIEWER.value)
+        user5 = User(username='tester', hashed_password=pwd_context.hash('tester'), email='Tester@example.com',
+                     role=RolesEnum.TESTER.value)
 
         # Добавление данных в сессию
-        session.add_all([user1, user2, user3, user4])
+        session.add_all([user1, user2, user3, user4, user5])
         session.commit()
     finally:
         session.close()
@@ -187,8 +189,21 @@ def populate_feature_type_task_types():
         session.close()
 
 
+def populate_task_approvers():
+    session = Session(bind=engine)
+    try:
+        task_type_approver1 = TaskTypeApprover(task_type_id=1, role_id=4)
+        task_type_approver2 = TaskTypeApprover(task_type_id=2, role_id=5)
+        task_type_approver3 = TaskTypeApprover(task_type_id=3, role_id=4)
+        task_type_approver4 = TaskTypeApprover(task_type_id=4, role_id=5)
+        session.add_all([task_type_approver1, task_type_approver2, task_type_approver3, task_type_approver4])
+        session.commit()
+    finally:
+        session.close()
+
+
 # Вызов функции для создания релизов
-#populate_roles()
+populate_roles()
 populate_users()
 populate_platforms()
 populate_channels()
@@ -197,3 +212,4 @@ populate_releases()
 populate_task_types()
 populate_feature_types()
 populate_feature_type_task_types()
+populate_task_approvers()

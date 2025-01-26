@@ -10,6 +10,7 @@ class RolesEnum(enum.Enum):
     USER = "user"
     RELEASE_MANAGER = "release_manager"
     REVIEWER = "reviewer"
+    TESTER = "tester"
 
 
 class User(Base):

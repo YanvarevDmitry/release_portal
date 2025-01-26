@@ -2,7 +2,8 @@ from sqlalchemy import select, delete, func, and_, update, insert
 from sqlalchemy.orm import Session
 
 from sql_app.models.features import FeatureTypeTaskType, Feature, FeatureType
-from sql_app.models.task import TaskType, Task, AttachmentLink
+from sql_app.models.task import TaskType, Task, AttachmentLink, TaskTypeApprover
+from sql_app.models.user import Role
 
 
 def get_task_type(db: Session, key_name: str | None = None, id: int | None = None):
@@ -99,8 +100,8 @@ def update_task(task_id: int, status: str, db: Session):
 
 
 def get_task(task_id: int, db: Session):
-	stmt = select(Task).where(Task.id == task_id)
-	return db.execute(stmt).scalar_one_or_none()
+    stmt = select(Task).where(Task.id == task_id)
+    return db.execute(stmt).scalar_one_or_none()
 
 
 def create_attachment(task_id: int, link: str, user_id: int, db: Session):
@@ -108,3 +109,10 @@ def create_attachment(task_id: int, link: str, user_id: int, db: Session):
     attachment = db.execute(stmt).scalar()
     db.commit()
     return attachment
+
+
+def get_task_type_approver(task_type_id: int, db: Session):
+    stmt = select(TaskTypeApprover.task_type_id, Role.name)
+    stmt = stmt.join(Role, Role.id == TaskTypeApprover.role_id)
+    stmt = stmt.where(TaskTypeApprover.task_type_id == task_type_id)
+    return db.execute(stmt).scalar_one_or_none()

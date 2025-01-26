@@ -68,6 +68,15 @@ def delete_task_type(task_type_id: int, current_user: get_current_user, db: db_s
     return None
 
 
+@router.get('/types/{task_type_id}/approver', response_model=TaskTypeOut, status_code=200)
+def get_task_type_approver(task_type_id: int, db: db_session):
+    task_type = tasks_service.get_task_type(id=task_type_id, db=db)
+    if not task_type:
+        logger.warning("Task type not found with ID: %d", task_type_id)
+        raise HTTPException(status_code=404, detail="Task type not found")
+    kek = tasks_service.get_task_type_approver(task_type_id=task_type_id, db=db)
+    return kek
+
 
 @router.patch('/{task_id}', response_model=TaskOut, status_code=200)
 def update_task(task_id: int,
