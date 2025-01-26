@@ -149,10 +149,9 @@ def add_comment(task_id: int, comment: str, current_user: get_current_user, db: 
 
 
 @router.get('{task_id}/comments', status_code=200)
-def get_comments(task_id: int, current_user: get_current_user, db: db_session):
+def get_comments(task_id: int, db: db_session):
     task = tasks_service.get_task(task_id=task_id, db=db)
     if not task:
         logger.warning("Task not found with ID: %d", task_id)
         raise HTTPException(status_code=404, detail="Task not found")
-    logger.info("User %s get comments for task with ID: %d", current_user.username, task_id)
     return tasks_service.get_comments(task_id=task_id, db=db)
