@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from sql_app.models.features import FeatureType, FeatureTypeTaskType, Feature
 from sql_app.models.releases import Release
-from sql_app.models.task import TaskType, Task, AttachmentLink
+from sql_app.models.task import TaskType, Task, AttachmentLink, TaskComment
 
 
 def get_feature_type(db: Session, name: str | None = None, feature_type_id: int | None = None):
@@ -97,14 +97,26 @@ def get_features(db: Session,
                                                                              AttachmentLink.uploaded_by).label(
         'attachments'))
     task_attachments_cte = task_attachments.cte('task_attachments_cte')
+
+    task_comments = select(TaskComment.task_id, func.array_agg(func.json_build_object('id', TaskComment.id,
+                                                                                      'comment', TaskComment.comment,
+                                                                                      'created_at',
+                                                                                      TaskComment.created_at,
+                                                                                      'user_id', TaskComment.user_id,
+                                                                                      )).label('comments'))
+    task_comments = task_comments.group_by(TaskComment.task_id)
+    task_comments_cte = task_comments.cte('task_comments_cte')
+
     stmt = select(Feature, func.array_agg(func.json_build_object('id', Task.id,
                                                                  'feature_id', Task.feature_id,
                                                                  'task_type_id', Task.task_type_id,
                                                                  'status', Task.status,
                                                                  'attachments',
-                                                                 task_attachments_cte.c.attachments)).label('tasks'))
+                                                                 task_attachments_cte.c.attachments,
+                                                                 'comments', task_comments_cte.c.comments)).label('tasks'))
     stmt = stmt.join(Task, Task.feature_id == Feature.id)
     stmt = stmt.join(task_attachments_cte, task_attachments_cte.c.task_id == Task.id, isouter=True)
+    stmt = stmt.join(task_comments_cte, task_comments_cte.c.task_id == Task.id, isouter=True)
     if feature_id:
         stmt = stmt.where(Feature.id == feature_id)
     if feature_name:

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from auth import get_current_user
-from schemas import User, TaskTypeOut, TaskTypeCreate, TaskOut, TaskEnum, AttachmentOut, TaskApproverOut
+from schemas import User, TaskTypeOut, TaskTypeCreate, TaskOut, TaskEnum, AttachmentOut, TaskApproverOut, TaskCommentOut
 from sql_app import tasks_service, users_service
 from sql_app.database import get_database
 from sql_app.models.user import RolesEnum
@@ -137,14 +137,15 @@ def upload_attachment(task_id: int, link: str, current_user: get_current_user, d
     return tasks_service.create_attachment(task_id=task_id, link=link, user_id=current_user.id, db=db)
 
 
-@router.post('{task_id}/comment', status_code=201)
+@router.post('{task_id}/comment', response_model=TaskCommentOut, status_code=201)
 def add_comment(task_id: int, comment: str, current_user: get_current_user, db: db_session):
     task = tasks_service.get_task(task_id=task_id, db=db)
     if not task:
         logger.warning("Task not found with ID: %d", task_id)
         raise HTTPException(status_code=404, detail="Task not found")
     logger.info("User %s added comment %s for task with ID: %d", current_user.username, comment, task_id)
-    return tasks_service.add_comment(task_id=task_id, comment=comment, user_id=current_user.id, db=db)
+    comment = tasks_service.add_comment(task_id=task_id, comment=comment, user_id=current_user.id, db=db)
+    return comment
 
 
 @router.get('{task_id}/comments', status_code=200)

@@ -244,3 +244,14 @@ class TaskApproverOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class TaskCommentOut(BaseModel):
+    id: int
+    task_id: int
+    comment: str
+    user_id: int
+    created_at: datetime.datetime
+
+    class Config:
+        orm_mode = True

@@ -127,7 +127,7 @@ def create_task_type_approver(task_type_id: int, role_id: int, db):
 
 def add_comment(task_id: int, comment: str, user_id: int, db: Session):
     stmt = insert(TaskComment).values(task_id=task_id, comment=comment, user_id=user_id).returning(TaskComment)
-    comment = db.execute(stmt).scalar_one()
+    comment = db.execute(stmt).scalar()
     db.commit()
     return comment
 
