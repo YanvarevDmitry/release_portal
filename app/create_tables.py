@@ -39,13 +39,13 @@ def populate_users():
     try:
         # Пример данных для таблицы User
         user1 = User(username="admin", hashed_password=pwd_context.hash('admin'), email="admin@example.com",
-                     role=RolesEnum.ADMIN)
+                     role=RolesEnum.ADMIN.value)
         user2 = User(username="manager", hashed_password=pwd_context.hash('manager'),
                      email="release_manager@example.com", role=RolesEnum.RELEASE_MANAGER)
         user3 = User(username="user", hashed_password=pwd_context.hash('user'), email="user@example.com",
-                     role=RolesEnum.USER)
+                     role=RolesEnum.USER.value)
         user4 = User(username="reviewer", hashed_password=pwd_context.hash('reviewer'), email="reviewer@example.com",
-                     role=RolesEnum.REVIEWER)
+                     role=RolesEnum.REVIEWER.value)
 
         # Добавление данных в сессию
         session.add_all([user1, user2, user3, user4])
