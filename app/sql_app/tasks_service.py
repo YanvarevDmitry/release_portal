@@ -2,7 +2,7 @@ from sqlalchemy import select, delete, func, and_, update, insert
 from sqlalchemy.orm import Session
 
 from sql_app.models.features import FeatureTypeTaskType, Feature, FeatureType
-from sql_app.models.task import TaskType, Task, AttachmentLink, TaskTypeApprover
+from sql_app.models.task import TaskType, Task, AttachmentLink, TaskTypeApprover, TaskComment
 from sql_app.models.user import Role
 
 
@@ -123,3 +123,16 @@ def create_task_type_approver(task_type_id: int, role_id: int, db):
     approver = db.execute(stmt).scalar()
     db.commit()
     return approver
+
+
+def add_comment(task_id: int, comment: str, user_id: int, db: Session):
+    stmt = insert(TaskComment).values(task_id=task_id, comment=comment, user_id=user_id).returning(TaskComment)
+    comment = db.execute(stmt).scalar_one()
+    db.commit()
+    return comment
+
+
+def get_comments(task_id: int, db: Session):
+    stmt = select(TaskComment)
+    stmt = stmt.where(TaskComment.task_id == task_id)
+    return db.execute(stmt).scalars().all()

@@ -38,3 +38,11 @@ class TaskTypeApprover(Base):
     task_type_id = Column(Integer, ForeignKey('task_types.id', ondelete='CASCADE'), nullable=False, primary_key=True)
     role_id = Column(Integer, ForeignKey('roles.id', ondelete='CASCADE'), nullable=False, primary_key=True)
 
+
+class TaskComment(Base):
+    __tablename__ = 'task_comments'
+    id = Column(Integer, primary_key=True, index=True)
+    task_id = Column(Integer, ForeignKey('tasks.id', ondelete='CASCADE'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'), nullable=False)
+    comment = Column(String, nullable=False)
+    created_at = Column(DateTime, nullable=False, server_default=func.now())

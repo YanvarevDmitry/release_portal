@@ -135,3 +135,23 @@ def upload_attachment(task_id: int, link: str, current_user: get_current_user, d
         logger.warning("Invalid link: %s", link)
         raise HTTPException(status_code=400, detail="Invalid link")
     return tasks_service.create_attachment(task_id=task_id, link=link, user_id=current_user.id, db=db)
+
+
+@router.post('{task_id}/comment', status_code=201)
+def add_comment(task_id: int, comment: str, current_user: get_current_user, db: db_session):
+    task = tasks_service.get_task(task_id=task_id, db=db)
+    if not task:
+        logger.warning("Task not found with ID: %d", task_id)
+        raise HTTPException(status_code=404, detail="Task not found")
+    logger.info("User %s added comment %s for task with ID: %d", current_user.username, comment, task_id)
+    return tasks_service.add_comment(task_id=task_id, comment=comment, user_id=current_user.id, db=db)
+
+
+@router.get('{task_id}/comments', status_code=200)
+def get_comments(task_id: int, current_user: get_current_user, db: db_session):
+    task = tasks_service.get_task(task_id=task_id, db=db)
+    if not task:
+        logger.warning("Task not found with ID: %d", task_id)
+        raise HTTPException(status_code=404, detail="Task not found")
+    logger.info("User %s get comments for task with ID: %d", current_user.username, task_id)
+    return tasks_service.get_comments(task_id=task_id, db=db)
