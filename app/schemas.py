@@ -169,6 +169,7 @@ class FeatureTypeOut(BaseModel):
 
 class FeatureCreate(BaseModel):
     name: str
+    jira_key: str | None
     status: str
     feature_type_id: int
     release_id: int
@@ -177,6 +178,7 @@ class FeatureCreate(BaseModel):
 class FeatureOut(BaseModel):
     id: int
     name: str
+    jira_key: str | None
     status: str
     created_at: datetime.datetime
     feature_type_id: int
@@ -189,6 +191,7 @@ class FeatureOut(BaseModel):
 class ReleaseFeature(BaseModel):
     id: int
     name: str
+    jira_key: str | None
     feature_type_id: int
     status: str
 

@@ -93,6 +93,7 @@ def delete_feature_type(feature_type_id: int, current_user: get_current_user, db
 @router.get('/all/', status_code=200)
 def get_all_features(db: db_session,
                      user_id: int | None = None,
+                     release_id: int | None = None,
                      page: int = 1,
                      page_size: int = 50):
     """
@@ -101,6 +102,7 @@ def get_all_features(db: db_session,
     Args:
         db (Session): Сессия базы данных.
         user_id (int, optional): ID пользователя для фильтрации фич.
+        release_id (int, optional): ID релиза для фильтрации фич.
         page: (int, optional): Номер страницы.
         page_size: (int, optional): Размер страницы.
 
@@ -111,7 +113,8 @@ def get_all_features(db: db_session,
     data, page_size, total = features_service.get_all_features_pagination(db=db,
                                                                           page=page,
                                                                           page_size=page_size,
-                                                                          user_id=user_id)
+                                                                          user_id=user_id,
+                                                                          release_id=release_id)
 
     return {'data': data,
             'page_size': page_size,
@@ -120,7 +123,10 @@ def get_all_features(db: db_session,
 
 
 @router.get("/", status_code=200)
-def get_feature(db: db_session, feature_id: int | None = None, feature_name: str | None = None):
+def get_feature(db: db_session,
+                feature_id: int | None = None,
+                feature_name: str | None = None,
+                jira_key: str | None = None ):
     """
     Получение фичи по ID или имени.
 
@@ -128,6 +134,7 @@ def get_feature(db: db_session, feature_id: int | None = None, feature_name: str
         db (Session): Сессия базы данных.
         feature_id (int, optional): ID фичи.
         feature_name (str, optional): Имя фичи.
+        jira_key (str, optional): Ключ Jira фичи.
 
     Exceptions:
         HTTPException: Если фича не найдена.
@@ -136,7 +143,10 @@ def get_feature(db: db_session, feature_id: int | None = None, feature_name: str
         FeatureOut: Фича с указанным ID или именем.
     """
     logger.info("Getting feature with ID: %s or name: %s", feature_id, feature_name)
-    feature = features_service.get_features(feature_id=feature_id, feature_name=feature_name, db=db)
+    feature = features_service.get_features(feature_id=feature_id,
+                                            feature_name=feature_name,
+                                            jira_key=jira_key,
+                                            db=db)
     if not feature:
         logger.warning("Feature not found with ID: %s or name: %s", feature_id, feature_name)
         raise HTTPException(status_code=404, detail="Feature not found")
@@ -171,6 +181,7 @@ def create_feature(feature: FeatureCreate, user: get_current_user, db: db_sessio
         raise HTTPException(status_code=404, detail="Feature type not found")
     feature = features_service.create_feature(name=feature.name,
                                               user_id=user.id,
+                                              jira_key=feature.jira_key,
                                               feature_type_id=feature.feature_type_id,
                                               release_id=feature.release_id,
                                               status=feature.status, db=db)

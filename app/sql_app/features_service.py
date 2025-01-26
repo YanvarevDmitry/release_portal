@@ -41,7 +41,8 @@ def delete_feature_type(feature_type_id: int, db: Session):
 def get_all_features_pagination(db: Session,
                                 page: int = 1,
                                 page_size: int | None = None,
-                                user_id: int | None = None
+                                user_id: int | None = None,
+                                release_id: int | None = None
                                 ):
     task_attachments = select(AttachmentLink.task_id, func.json_build_object('id', AttachmentLink.id,
                                                                              'link', AttachmentLink.link,
@@ -60,6 +61,8 @@ def get_all_features_pagination(db: Session,
     stmt = stmt.join(task_attachments_cte, task_attachments_cte.c.task_id == Task.id, isouter=True)
     if user_id:
         stmt = stmt.where(Feature.creator_id == user_id)
+    if release_id:
+        stmt = stmt.where(Feature.release_id == release_id)
     stmt = stmt.group_by(Feature.id)
     # Защита от дурака
     if page == 0:
@@ -74,7 +77,8 @@ def get_all_features_pagination(db: Session,
 def get_features(db: Session,
                  feature_id: int | None = None,
                  feature_name: str | None = None,
-                 user_id: int | None = None
+                 user_id: int | None = None,
+                 jira_key: str | None = None,
                  ):
     task_attachments = select(AttachmentLink.task_id, func.json_build_object('id', AttachmentLink.id,
                                                                              'link', AttachmentLink.link,
@@ -97,6 +101,8 @@ def get_features(db: Session,
         stmt = stmt.where(func.lower(Feature.name).like(f'%{feature_name.lower()}%'))
     if user_id:
         stmt = stmt.where(Feature.creator_id == user_id)
+    if jira_key:
+        stmt = stmt.where(Feature.jira_key == jira_key)
     stmt = stmt.group_by(Feature.id)
     return db.execute(stmt).mappings().all()
 
@@ -106,9 +112,16 @@ def get_feature(feature_id: int, db: Session) -> Feature:
     return db.execute(stmt).scalar_one_or_none()
 
 
-def create_feature(user_id: int, name: str, feature_type_id: int, release_id: int, status: str, db: Session):
+def create_feature(user_id: int,
+                   name: str,
+                   feature_type_id: int,
+                   release_id: int,
+                   status: str,
+                   db: Session,
+                   jira_key: str | None = None):
     feature = Feature(creator_id=user_id,
                       name=name,
+                      jira_key=jira_key,
                       feature_type_id=feature_type_id,
                       release_id=release_id,
                       status=status)

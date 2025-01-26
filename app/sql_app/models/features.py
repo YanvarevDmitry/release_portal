@@ -8,6 +8,7 @@ class Feature(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
+    jira_key = Column(String, nullable=True)
     status = Column(String, nullable=False)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     release_id = Column(Integer, ForeignKey('releases.id', ondelete='CASCADE'), nullable=False)
