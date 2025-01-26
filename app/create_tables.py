@@ -10,12 +10,28 @@ from sql_app.models.features import FeatureType, FeatureTypeTaskType, Feature
 from sql_app.models.platforms import Platform
 from sql_app.models.releases import Release, ReleaseStageEnum, ReleaseType
 from sql_app.models.task import TaskType
-from sql_app.models.user import User, RolesEnum
+from sql_app.models.user import User, RolesEnum, Role
 
 engine = create_engine(DbSettings.DB_URL)
 
 # Создание всех таблиц
 Base.metadata.create_all(bind=engine)
+
+
+def populate_roles():
+    session = Session(bind=engine)
+    try:
+        # Пример данных для таблицы RolesEnum
+        role1 = Role(name=RolesEnum.ADMIN.value, description="Администратор")
+        role2 = Role(name=RolesEnum.USER.value, description="Пользователь")
+        role3 = Role(name=RolesEnum.RELEASE_MANAGER.value, description="Менеджер релизов")
+        role4 = Role(name=RolesEnum.REVIEWER.value, description="Ревьюер")
+
+        # Добавление данных в сессию
+        session.add_all([role1, role2, role3, role4])
+        session.commit()
+    finally:
+        session.close()
 
 
 def populate_users():
@@ -28,9 +44,11 @@ def populate_users():
                      email="release_manager@example.com", role=RolesEnum.RELEASE_MANAGER)
         user3 = User(username="user", hashed_password=pwd_context.hash('user'), email="user@example.com",
                      role=RolesEnum.USER)
+        user4 = User(username="reviewer", hashed_password=pwd_context.hash('reviewer'), email="reviewer@example.com",
+                     role=RolesEnum.REVIEWER)
 
         # Добавление данных в сессию
-        session.add_all([user1, user2, user3])
+        session.add_all([user1, user2, user3, user4])
         session.commit()
     finally:
         session.close()
@@ -167,20 +185,8 @@ def populate_feature_type_task_types():
         session.close()
 
 
-def populate_features():
-    session = Session(bind=engine)
-    try:
-        feature1 = Feature(name='Доработка приложения android', status='open', release_id=1, feature_type_id=1,
-                           creator_id=3)
-        feature2 = Feature(name='Доработка приложения ios', status='open', release_id=2, feature_type_id=1,
-                           creator_id=3)
-        session.add_all([feature1, feature2])
-        session.commit()
-    finally:
-        session.close()
-
-
 # Вызов функции для создания релизов
+populate_roles()
 populate_users()
 populate_platforms()
 populate_channels()
@@ -189,4 +195,3 @@ populate_releases()
 populate_task_types()
 populate_feature_types()
 populate_feature_type_task_types()
-populate_features()
