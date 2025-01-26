@@ -17,7 +17,7 @@ class Task(Base):
     __tablename__ = 'tasks'
 
     id = Column(Integer, primary_key=True, index=True)
-    feature_id = Column(Integer, ForeignKey('features.id'), nullable=False)
+    feature_id = Column(Integer, ForeignKey('features.id', ondelete='CASCADE'), nullable=False)
     task_type_id = Column(Integer, ForeignKey('task_types.id'), nullable=False)
     status = Column(String, nullable=False)
 

@@ -126,7 +126,7 @@ def get_all_features(db: db_session,
 def get_feature(db: db_session,
                 feature_id: int | None = None,
                 feature_name: str | None = None,
-                jira_key: str | None = None ):
+                jira_key: str | None = None):
     """
     Получение фичи по ID или имени.
 
@@ -285,3 +285,28 @@ def change_feature_release(feature_id: int, release_id: int, user: get_current_u
     feature = features_service.update_feature(feature_id=feature_id, release_id=release_id, db=db)
     logger.info("User %s move feature %d to enw release %d", user.username, feature_id, release_id)
     return feature
+
+
+@router.delete('/{feature_id}', status_code=204)
+def delete_feature(feature_id: int, user: get_current_user, db: db_session):
+    """
+    Удаление фичи.
+    Args:
+        feature_id (int): ID фичи.
+        user (User): Текущий аутентифицированный пользователь.
+        db (Session): Сессия базы данных.
+    Exceptions:
+        HTTPException: Если фича не найдена.
+    Returns:
+        None
+    """
+    feature = features_service.get_feature(feature_id=feature_id, db=db)
+    if not feature:
+        logger.warning("Feature not found with ID: %d", feature_id)
+        raise HTTPException(status_code=404, detail="Feature not found")
+    if feature.creator_id != user.id:
+        if user.role not in [RolesEnum.ADMIN.value, RolesEnum.RELEASE_MANAGER.value]:
+            raise HTTPException(status_code=403, detail="Not enough permissions")
+    logger.info("User %s delete feature with ID: %d", user.username, feature_id)
+    features_service.delete_feature(feature_id=feature_id, db=db)
+    return

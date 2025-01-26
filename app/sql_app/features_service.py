@@ -151,3 +151,10 @@ def update_feature(db: Session,
     result = db.execute(stmt).scalar_one()
     db.commit()
     return result
+
+
+def delete_feature(feature_id: int, db: Session):
+    stmt = delete(Feature).where(Feature.id == feature_id).returning(Feature)
+    result = db.execute(stmt).scalar_one()
+    db.commit()
+    return result

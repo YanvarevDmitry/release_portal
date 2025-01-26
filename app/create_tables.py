@@ -40,8 +40,10 @@ def populate_users():
         # Пример данных для таблицы User
         user1 = User(username="admin", hashed_password=pwd_context.hash('admin'), email="admin@example.com",
                      role=RolesEnum.ADMIN.value)
-        user2 = User(username="manager", hashed_password=pwd_context.hash('manager'),
-                     email="release_manager@example.com", role=RolesEnum.RELEASE_MANAGER)
+        user2 = User(username="manager",
+                     hashed_password=pwd_context.hash('manager'),
+                     email="release_manager@example.com",
+                     role=RolesEnum.RELEASE_MANAGER.value)
         user3 = User(username="user", hashed_password=pwd_context.hash('user'), email="user@example.com",
                      role=RolesEnum.USER.value)
         user4 = User(username="reviewer", hashed_password=pwd_context.hash('reviewer'), email="reviewer@example.com",
@@ -186,7 +188,7 @@ def populate_feature_type_task_types():
 
 
 # Вызов функции для создания релизов
-populate_roles()
+#populate_roles()
 populate_users()
 populate_platforms()
 populate_channels()
