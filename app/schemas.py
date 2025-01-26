@@ -231,6 +231,13 @@ class PaginationFeatures(BasePagination):
         orm_mode = True
 
 
+class PaginationReleaseStages(BasePagination):
+    data: list[ReleaseStageOutWithFeature]
+
+    class Config:
+        orm_mode = True
+
+
 class TaskApproverOut(BaseModel):
     task_type_id: int
     role_name: str

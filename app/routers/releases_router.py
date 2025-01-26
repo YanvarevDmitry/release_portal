@@ -14,7 +14,8 @@ from sql_app.database import get_database
 from sql_app.models.user import RolesEnum
 from sql_app.platforms_service import get_platform
 from sql_app.releases_service import get_all_releases, update_release, get_release, get_all_release_types
-from schemas import ReleaseStageCreate, User, ReleaseStageOut, ReleaseTypeOut, ReleaseStageOutWithFeature
+from schemas import ReleaseStageCreate, User, ReleaseStageOut, ReleaseTypeOut, ReleaseStageOutWithFeature, \
+    PaginationReleaseStages
 from auth import get_current_user
 import logg_config
 
@@ -47,11 +48,24 @@ def create_release(stage: ReleaseStageCreate,
     return release
 
 
-@router.get("/all", response_model=list[ReleaseStageOut])
-def get_all_releases(db: db_session):
+@router.get("/all", response_model=PaginationReleaseStages, status_code=200)
+def get_all_releases(db: db_session,
+                     platform_id: int | None = None,
+                     channel_id: int | None = None,
+                     page: int = 1,
+                     page_size: int = 50):
     logger.info("Fetching all releases")
-    releases = releases_service.get_all_releases(db=db)
-    return releases
+    data, page_size, total = releases_service.get_all_releases(db=db,
+                                                               platform_id=platform_id,
+                                                               channel_id=channel_id,
+                                                               page=page,
+                                                               page_size=page_size)
+    result = []
+    for release in data:
+        result_row = ReleaseStageOutWithFeature.from_orm(release.Release)
+        result_row.features = release.features
+        result.append(result_row)
+    return {'data': result, 'page': page, 'page_size': page_size, 'total': total}
 
 
 @router.get('/{release_id}', status_code=200)

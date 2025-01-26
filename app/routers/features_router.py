@@ -94,6 +94,8 @@ def delete_feature_type(feature_type_id: int, current_user: get_current_user, db
 def get_all_features(db: db_session,
                      user_id: int | None = None,
                      release_id: int | None = None,
+                     platform_id: int | None = None,
+                     channel_id: int | None = None,
                      page: int = 1,
                      page_size: int = 50):
     """
@@ -103,6 +105,8 @@ def get_all_features(db: db_session,
         db (Session): Сессия базы данных.
         user_id (int, optional): ID пользователя для фильтрации фич.
         release_id (int, optional): ID релиза для фильтрации фич.
+        platform_id (int, optional): ID платформы для фильтрации фич.
+        channel_id (int, optional): ID канала для фильтрации фич.
         page: (int, optional): Номер страницы.
         page_size: (int, optional): Размер страницы.
 
@@ -113,6 +117,8 @@ def get_all_features(db: db_session,
     data, page_size, total = features_service.get_all_features_pagination(db=db,
                                                                           page=page,
                                                                           page_size=page_size,
+                                                                          platform_id=platform_id,
+                                                                          channel_id=channel_id,
                                                                           user_id=user_id,
                                                                           release_id=release_id)
 

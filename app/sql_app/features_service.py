@@ -2,6 +2,7 @@ from sqlalchemy import select, func, delete, update
 from sqlalchemy.orm import Session
 
 from sql_app.models.features import FeatureType, FeatureTypeTaskType, Feature
+from sql_app.models.releases import Release
 from sql_app.models.task import TaskType, Task, AttachmentLink
 
 
@@ -42,7 +43,9 @@ def get_all_features_pagination(db: Session,
                                 page: int = 1,
                                 page_size: int | None = None,
                                 user_id: int | None = None,
-                                release_id: int | None = None
+                                release_id: int | None = None,
+                                platform_id: int | None = None,
+                                channel_id: int | None = None,
                                 ):
     task_attachments = select(AttachmentLink.task_id, func.json_build_object('id', AttachmentLink.id,
                                                                              'link', AttachmentLink.link,
@@ -63,6 +66,13 @@ def get_all_features_pagination(db: Session,
         stmt = stmt.where(Feature.creator_id == user_id)
     if release_id:
         stmt = stmt.where(Feature.release_id == release_id)
+    if platform_id or channel_id:
+        stmt = stmt.join(Release, Release.id == Feature.release_id)
+        if platform_id:
+            stmt = stmt.where(Release.platform_id == platform_id)
+        if channel_id:
+            stmt = stmt.where(Release.channel_id == channel_id)
+
     stmt = stmt.group_by(Feature.id)
     # Защита от дурака
     if page == 0:

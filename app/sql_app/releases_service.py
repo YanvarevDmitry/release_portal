@@ -19,8 +19,34 @@ def create_release(stage: ReleaseStageCreate, db) -> Release:
     return db_stage
 
 
-def get_all_releases(db) -> list[Release]:
-    return db.execute(select(Release)).scalars().all()
+def get_all_releases(db: Session,
+                     page: int,
+                     page_size: int,
+                     platform_id: int | None = None,
+                     channel_id: int | None = None,
+                     ):
+    stmt = select(Release, coalesce(func.array_agg(func.json_build_object('id', Feature.id,
+                                                                          'name', Feature.name,
+                                                                          'feature_type_id', Feature.feature_type_id,
+                                                                          'status', Feature.status,
+                                                                          )).filter(Feature.id.isnot(None)),
+                                    '{}').label('features'))
+    stmt = stmt.join(Feature, Feature.release_id == Release.id, isouter=True)
+    if platform_id:
+        stmt = stmt.where(Release.platform_id == platform_id)
+    if channel_id:
+        stmt = stmt.where(Release.channel_id == channel_id)
+    if page == 0:
+        page = 1
+    if page_size == 0:
+        page_size = 50
+    stmt = stmt.group_by(Release.id)
+    total = db.execute(select(func.count()).select_from(stmt.subquery())).scalar()
+    stmt = stmt.offset((page - 1) * page_size)
+    stmt = stmt.limit(page_size)
+    result = db.execute(stmt).mappings().all()
+
+    return result, len(result), total
 
 
 def get_release(db: Session, name: str | None = None, release_id: int | None = None):
