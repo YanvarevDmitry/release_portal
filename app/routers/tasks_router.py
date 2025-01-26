@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from auth import get_current_user
 from schemas import User, TaskTypeOut, TaskTypeCreate, TaskOut, TaskEnum, AttachmentOut
-from sql_app import tasks_service
+from sql_app import tasks_service, users_service
 from sql_app.database import get_database
 from sql_app.models.user import RolesEnum
 import logg_config
@@ -68,7 +68,7 @@ def delete_task_type(task_type_id: int, current_user: get_current_user, db: db_s
     return None
 
 
-@router.get('/types/{task_type_id}/approver', response_model=TaskTypeOut, status_code=200)
+@router.get('/types/{task_type_id}/approver', status_code=200)
 def get_task_type_approver(task_type_id: int, db: db_session):
     task_type = tasks_service.get_task_type(id=task_type_id, db=db)
     if not task_type:
@@ -76,6 +76,23 @@ def get_task_type_approver(task_type_id: int, db: db_session):
         raise HTTPException(status_code=404, detail="Task type not found")
     kek = tasks_service.get_task_type_approver(task_type_id=task_type_id, db=db)
     return kek
+
+
+@router.post('/types/{task_type_id}/approver', status_code=201)
+def create_task_type_approver(task_type_id: int, role_name: str, db: db_session):
+    task_type = tasks_service.get_task_type(id=task_type_id, db=db)
+    if not task_type:
+        logger.warning("Task type not found with ID: %d", task_type_id)
+        raise HTTPException(status_code=404, detail="Task type not found")
+    role = users_service.get_role(name=role_name, db=db)
+    if not role:
+        logger.warning("Role not found with name: %d", role_name)
+        raise HTTPException(status_code=404, detail="Role not found")
+    if not tasks_service.get_task_type_approver(task_type_id=task_type_id, db=db):
+        logger.warning("Task type approver already exists for task type with ID: %d", task_type_id)
+        raise HTTPException(status_code=400, detail="Task type approver already exists")
+    tasks_service.create_task_type_approver(task_type_id=task_type_id, role_id=role.id, db=db)
+    return None
 
 
 @router.patch('/{task_id}', response_model=TaskOut, status_code=200)
@@ -86,9 +103,17 @@ def update_task(task_id: int,
     if current_user.role not in [RolesEnum.ADMIN.value, RolesEnum.RELEASE_MANAGER.value]:
         logger.warning("User %s does not have enough permissions", current_user.username)
         raise HTTPException(status_code=403, detail="Only admin or release manager can update task")
-    if not tasks_service.get_task(task_id=task_id, db=db):
+    task = tasks_service.get_task(task_id=task_id, db=db)
+    if not task:
         logger.warning("Task not found with ID: %d", task_id)
         raise HTTPException(status_code=404, detail="Task not found")
+    task_approver = tasks_service.get_task_type_approver(task_type_id=task.task_type_id, db=db)
+    if task_approver and task_approver['name'] != current_user.role:
+        logger.warning("User %s does not have enough permissions. Only user with role %s can update task",
+                       current_user.username,
+                       task_approver['name'])
+        raise HTTPException(status_code=403, detail=f"User {current_user.username} does not have enough permissions."
+                                                    f"Only user with role {task_approver['name']} can update task")
     logger.info("User %s  update task with ID: %d", current_user.username, task_id)
     return tasks_service.update_task(task_id=task_id, status=status.value, db=db)
 

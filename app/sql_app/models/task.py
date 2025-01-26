@@ -35,5 +35,6 @@ class AttachmentLink(Base):
 class TaskTypeApprover(Base):
     __tablename__ = 'task_type_approvers'
 
-    task_type_id = Column(Integer, ForeignKey('task_types.id', ondelete='CASCADE'), nullable=False)
-    role_id = Column(Integer, ForeignKey('roles.id', ondelete='CASCADE'), nullable=False)
+    task_type_id = Column(Integer, ForeignKey('task_types.id', ondelete='CASCADE'), nullable=False, primary_key=True)
+    role_id = Column(Integer, ForeignKey('roles.id', ondelete='CASCADE'), nullable=False, primary_key=True)
+

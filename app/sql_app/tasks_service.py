@@ -116,3 +116,10 @@ def get_task_type_approver(task_type_id: int, db: Session):
     stmt = stmt.join(Role, Role.id == TaskTypeApprover.role_id)
     stmt = stmt.where(TaskTypeApprover.task_type_id == task_type_id)
     return db.execute(stmt).scalar_one_or_none()
+
+
+def create_task_type_approver(task_type_id: int, role_id: int, db):
+    stmt = insert(TaskTypeApprover).values(task_type_id=task_type_id, role_id=role_id).returning(TaskTypeApprover)
+    approver = db.execute(stmt).scalar()
+    db.commit()
+    return approver

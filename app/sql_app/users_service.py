@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from auth import get_password_hash
 from schemas import UserCreate
-from sql_app.models.user import User
+from sql_app.models.user import User, Role
 
 
 def get_user(db: Session, username: str | None = None, user_id: int | None = None) -> User:
@@ -51,3 +51,12 @@ def delete_user(db: Session, user_id: int):
     user = db.execute(stmt).scalar_one()
     db.commit()
     return user
+
+
+def get_role(db: Session, role_id: int | None = None, name: str | None = None) -> Role:
+    stmt = select(Role)
+    if role_id:
+        stmt = stmt.where(Role.id == role_id)
+    if name:
+        stmt = stmt.where(Role.name == name)
+    return db.execute(stmt).scalar_one_or_none()
