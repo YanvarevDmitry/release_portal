@@ -18,7 +18,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
-    role = Column(Enum(RolesEnum), ForeignKey('roles.name', ondelete='SET NULL'), default=RolesEnum.USER.value)
+    role = Column(String, ForeignKey('roles.name', ondelete='SET NULL'), default=RolesEnum.USER.value)
     hashed_password = Column(String)
 
 
