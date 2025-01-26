@@ -13,6 +13,7 @@ services:
         condition: service_healthy
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/postgres
+      - TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaW1hbm9nYSIsImV4cCI6MTczNjg1MzgyN30.zCvt2cQwLtx_jKz8hjbWnQtD7Y2GSxoTUmOrwiWkAhY
 
   db:
     image: postgres:13

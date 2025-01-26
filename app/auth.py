@@ -5,11 +5,12 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 
+from settings import AppSettings
 from sql_app.models.user import User as DbUser
 from sql_app.database import get_database
 
 # Secret key to encode the JWT token
-SECRET_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaW1hbm9nYSIsImV4cCI6MTczNjg1MzgyN30.zCvt2cQwLtx_jKz8hjbWnQtD7Y2GSxoTUmOrwiWkAhY"
+SECRET_KEY = AppSettings.TOKEN
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

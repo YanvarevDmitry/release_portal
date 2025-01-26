@@ -111,6 +111,7 @@ def delete_release_type(release_type_id: int, db: Session):
 def get_release_with_features(release_id: int, db: Session):
     stmt = select(Release, coalesce(func.array_agg(func.json_build_object('id', Feature.id,
                                                                           'name', Feature.name,
+                                                                          'jira_key', Feature.jira_key,
                                                                           'feature_type_id', Feature.feature_type_id,
                                                                           'status', Feature.status,
                                                                           )).filter(Feature.id.isnot(None)),

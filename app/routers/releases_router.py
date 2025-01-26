@@ -1,6 +1,6 @@
 from typing import Annotated
 import openpyxl
-from openpyxl.styles import Font
+from openpyxl.styles import Border, Side, Font, PatternFill
 
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -97,27 +97,47 @@ def delete_release(release_id: int,
     return None
 
 
-@router.get("/report", response_class=FileResponse)
-def generate_report(db: db_session):
-    logger.info("Generating report for all releases")
-    stages = get_all_releases(db=db)
+@router.get("/{release_id}/report", response_class=FileResponse)
+def generate_report(release_id: int, db: db_session):
+    release = get_release(release_id=release_id, db=db)
+    if not release:
+        logger.warning("Release not found with ID: %d", release_id)
+        raise HTTPException(status_code=404, detail="Release not found")
+
+    features = releases_service.get_release_with_features(release_id=release_id, db=db).features
+
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = "Отчет по релизам"
+    ws.title = release.name
 
-    # Заголовки
-    headers = ["Имя", "Описание", "Дата начала", "Дата окончания", "Статус"]
-    for col_num, header in enumerate(headers, 1):
+    # Feature details
+    feature_headers = ["Имя фичи", "Ключ фичи", "Статус", "Тип фичи"]
+    for col_num, header in enumerate(feature_headers, 1):
         cell = ws.cell(row=1, column=col_num, value=header)
-        cell.font = Font(bold=True)
+        cell.font = Font(bold=True, size=14)
+        cell.fill = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
 
-    # Данные
-    for row_num, stage in enumerate(stages, 2):
-        ws.cell(row=row_num, column=1, value=stage.name)
-        ws.cell(row=row_num, column=2, value=stage.description)
-        ws.cell(row=row_num, column=3, value=stage.start_date)
-        ws.cell(row=row_num, column=4, value=stage.end_date)
-        ws.cell(row=row_num, column=5, value=stage.status.value)
+    thin_border = Side(border_style='thin', color='000000')
+    border = Border(left=thin_border, right=thin_border, top=thin_border, bottom=thin_border)
+
+    for row_num, feature in enumerate(features, 2):
+        for col_num in range(1, 5):
+            cell = ws.cell(row=row_num, column=col_num)
+            if col_num == 1:
+                cell.value = feature['name']
+            elif col_num == 2:
+                cell.value = feature['jira_key']
+            elif col_num == 3:
+                cell.value = feature['status']
+            elif col_num == 4:
+                cell.value = feature['feature_type_id']
+
+    ws.auto_filter.ref = ws.dimensions
+    ws.auto_filter.add_filter_column(1, [feature['status'] for feature in features])
+
+    for row in ws['A1:D6']:
+        for cell in row:
+            cell.border = border
 
     file_path = "release_report.xlsx"
     wb.save(file_path)
