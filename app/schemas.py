@@ -229,3 +229,11 @@ class PaginationFeatures(BasePagination):
 
     class Config:
         orm_mode = True
+
+
+class TaskApproverOut(BaseModel):
+    task_type_id: int
+    role_name: str
+
+    class Config:
+        orm_mode = True

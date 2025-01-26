@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from auth import get_current_user
-from schemas import User, TaskTypeOut, TaskTypeCreate, TaskOut, TaskEnum, AttachmentOut
+from schemas import User, TaskTypeOut, TaskTypeCreate, TaskOut, TaskEnum, AttachmentOut, TaskApproverOut
 from sql_app import tasks_service, users_service
 from sql_app.database import get_database
 from sql_app.models.user import RolesEnum
@@ -68,18 +68,20 @@ def delete_task_type(task_type_id: int, current_user: get_current_user, db: db_s
     return None
 
 
-@router.get('/types/{task_type_id}/approver', status_code=200)
+@router.get('/types/{task_type_id}/approver', response_model=TaskApproverOut, status_code=200)
 def get_task_type_approver(task_type_id: int, db: db_session):
     task_type = tasks_service.get_task_type(id=task_type_id, db=db)
     if not task_type:
         logger.warning("Task type not found with ID: %d", task_type_id)
         raise HTTPException(status_code=404, detail="Task type not found")
-    kek = tasks_service.get_task_type_approver(task_type_id=task_type_id, db=db)
-    return kek
+    return tasks_service.get_task_type_approver(task_type_id=task_type_id, db=db)
 
 
 @router.post('/types/{task_type_id}/approver', status_code=201)
-def create_task_type_approver(task_type_id: int, role_name: str, db: db_session):
+def create_task_type_approver(task_type_id: int, role_name: str, current_user: get_current_user, db: db_session):
+    if current_user.role not in [RolesEnum.ADMIN.value, RolesEnum.RELEASE_MANAGER.value]:
+        logger.warning("User %s does not have enough permissions", current_user.username)
+        raise HTTPException(status_code=403, detail="Not enough permissions")
     task_type = tasks_service.get_task_type(id=task_type_id, db=db)
     if not task_type:
         logger.warning("Task type not found with ID: %d", task_type_id)
@@ -100,20 +102,19 @@ def update_task(task_id: int,
                 status: TaskEnum,
                 current_user: get_current_user,
                 db: db_session):
-    if current_user.role not in [RolesEnum.ADMIN.value, RolesEnum.RELEASE_MANAGER.value]:
-        logger.warning("User %s does not have enough permissions", current_user.username)
-        raise HTTPException(status_code=403, detail="Only admin or release manager can update task")
     task = tasks_service.get_task(task_id=task_id, db=db)
     if not task:
         logger.warning("Task not found with ID: %d", task_id)
         raise HTTPException(status_code=404, detail="Task not found")
     task_approver = tasks_service.get_task_type_approver(task_type_id=task.task_type_id, db=db)
-    if task_approver and task_approver['name'] != current_user.role:
-        logger.warning("User %s does not have enough permissions. Only user with role %s can update task",
-                       current_user.username,
-                       task_approver['name'])
-        raise HTTPException(status_code=403, detail=f"User {current_user.username} does not have enough permissions."
-                                                    f"Only user with role {task_approver['name']} can update task")
+    if current_user.role not in [RolesEnum.ADMIN.value, RolesEnum.RELEASE_MANAGER.value]:
+        if task_approver and task_approver[1] != current_user.role:
+            logger.warning("User %s does not have enough permissions. Only user with role %s can update task",
+                           current_user.username,
+                           task_approver[1])
+            raise HTTPException(status_code=403,
+                                detail=f"User {current_user.username} does not have enough permissions. "
+                                       f"Only user with role {task_approver[1]} can update task")
     logger.info("User %s  update task with ID: %d", current_user.username, task_id)
     return tasks_service.update_task(task_id=task_id, status=status.value, db=db)
 

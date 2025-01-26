@@ -112,10 +112,10 @@ def create_attachment(task_id: int, link: str, user_id: int, db: Session):
 
 
 def get_task_type_approver(task_type_id: int, db: Session):
-    stmt = select(TaskTypeApprover.task_type_id, Role.name)
+    stmt = select(TaskTypeApprover.task_type_id, Role.name.label('role_name'))
     stmt = stmt.join(Role, Role.id == TaskTypeApprover.role_id)
     stmt = stmt.where(TaskTypeApprover.task_type_id == task_type_id)
-    return db.execute(stmt).scalar_one_or_none()
+    return db.execute(stmt).one_or_none()
 
 
 def create_task_type_approver(task_type_id: int, role_id: int, db):
