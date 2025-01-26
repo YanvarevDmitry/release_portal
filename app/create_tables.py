@@ -26,9 +26,10 @@ def populate_roles():
         role2 = Role(name=RolesEnum.USER.value, description="Пользователь")
         role3 = Role(name=RolesEnum.RELEASE_MANAGER.value, description="Менеджер релизов")
         role4 = Role(name=RolesEnum.REVIEWER.value, description="Ревьюер")
+        role5 = Role(name=RolesEnum.TESTER.value, description="Тестировщик")
 
         # Добавление данных в сессию
-        session.add_all([role1, role2, role3, role4])
+        session.add_all([role1, role2, role3, role4, role5])
         session.commit()
     finally:
         session.close()
