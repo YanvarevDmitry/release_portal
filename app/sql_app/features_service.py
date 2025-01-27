@@ -46,6 +46,7 @@ def get_all_features_pagination(db: Session,
                                 release_id: int | None = None,
                                 platform_id: int | None = None,
                                 channel_id: int | None = None,
+                                feature_status: str | None = None,
                                 ):
     task_attachments = select(AttachmentLink.task_id, func.json_build_object('id', AttachmentLink.id,
                                                                              'link', AttachmentLink.link,
@@ -72,7 +73,8 @@ def get_all_features_pagination(db: Session,
             stmt = stmt.where(Release.platform_id == platform_id)
         if channel_id:
             stmt = stmt.where(Release.channel_id == channel_id)
-
+    if feature_status:
+        stmt = stmt.where(Feature.status == feature_status)
     stmt = stmt.group_by(Feature.id)
     # Защита от дурака
     if page == 0:
@@ -89,6 +91,7 @@ def get_features(db: Session,
                  feature_name: str | None = None,
                  user_id: int | None = None,
                  jira_key: str | None = None,
+                 feature_status: str | None = None
                  ):
     task_attachments = select(AttachmentLink.task_id, func.json_build_object('id', AttachmentLink.id,
                                                                              'link', AttachmentLink.link,
@@ -113,7 +116,8 @@ def get_features(db: Session,
                                                                  'status', Task.status,
                                                                  'attachments',
                                                                  task_attachments_cte.c.attachments,
-                                                                 'comments', task_comments_cte.c.comments)).label('tasks'))
+                                                                 'comments', task_comments_cte.c.comments)).label(
+        'tasks'))
     stmt = stmt.join(Task, Task.feature_id == Feature.id)
     stmt = stmt.join(task_attachments_cte, task_attachments_cte.c.task_id == Task.id, isouter=True)
     stmt = stmt.join(task_comments_cte, task_comments_cte.c.task_id == Task.id, isouter=True)
@@ -125,6 +129,8 @@ def get_features(db: Session,
         stmt = stmt.where(Feature.creator_id == user_id)
     if jira_key:
         stmt = stmt.where(Feature.jira_key == jira_key)
+    if feature_status:
+        stmt = stmt.where(Feature.status == feature_status)
     stmt = stmt.group_by(Feature.id)
     return db.execute(stmt).mappings().all()
 

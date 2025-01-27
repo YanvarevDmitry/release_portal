@@ -24,6 +24,7 @@ def get_all_releases(db: Session,
                      page_size: int,
                      platform_id: int | None = None,
                      channel_id: int | None = None,
+                     status: str | None = None,
                      ):
     stmt = select(Release, coalesce(func.array_agg(func.json_build_object('id', Feature.id,
                                                                           'name', Feature.name,
@@ -36,6 +37,8 @@ def get_all_releases(db: Session,
         stmt = stmt.where(Release.platform_id == platform_id)
     if channel_id:
         stmt = stmt.where(Release.channel_id == channel_id)
+    if status:
+        stmt = stmt.where(Release.status == status)
     if page == 0:
         page = 1
     if page_size == 0:

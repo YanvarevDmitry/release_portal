@@ -2,7 +2,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from auth import get_current_user
-from schemas import User, FeatureTypeOut, FeatureTypeCreate, FeatureCreate, FeatureOut, PaginationFeatures
+from schemas import User, FeatureTypeOut, FeatureTypeCreate, FeatureCreate, FeatureOut, \
+    FeatureStatusENUM
 from sql_app import features_service, releases_service, tasks_service
 from sql_app.database import get_database
 from sql_app.models.user import RolesEnum
@@ -96,6 +97,7 @@ def get_all_features(db: db_session,
                      release_id: int | None = None,
                      platform_id: int | None = None,
                      channel_id: int | None = None,
+                     feature_status: FeatureStatusENUM | None = None,
                      page: int = 1,
                      page_size: int = 50):
     """
@@ -107,6 +109,7 @@ def get_all_features(db: db_session,
         release_id (int, optional): ID релиза для фильтрации фич.
         platform_id (int, optional): ID платформы для фильтрации фич.
         channel_id (int, optional): ID канала для фильтрации фич.
+        feature_status (FeatureStatusENUM, optional): Статус фичи
         page: (int, optional): Номер страницы.
         page_size: (int, optional): Размер страницы.
 
@@ -119,6 +122,7 @@ def get_all_features(db: db_session,
                                                                           page_size=page_size,
                                                                           platform_id=platform_id,
                                                                           channel_id=channel_id,
+                                                                          feature_status=feature_status.value if feature_status else None,
                                                                           user_id=user_id,
                                                                           release_id=release_id)
 
@@ -132,7 +136,8 @@ def get_all_features(db: db_session,
 def get_feature(db: db_session,
                 feature_id: int | None = None,
                 feature_name: str | None = None,
-                jira_key: str | None = None):
+                jira_key: str | None = None,
+                ):
     """
     Получение фичи по ID или имени.
 

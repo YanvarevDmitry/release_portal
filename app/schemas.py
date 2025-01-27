@@ -255,3 +255,18 @@ class TaskCommentOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class FeatureStatusENUM(enum.Enum):
+    OPEN = 'open'
+    IN_PROGRESS = 'in_progress'
+    REVIEW = 'review'
+    DONE = 'done'
+    CANCELLED = 'cancelled'
+
+
+class ReleaseStatusENUM(enum.Enum):
+    OPEN = 'open'
+    IN_PROGRESS = 'in_progress'
+    DONE = 'done'
+    CANCELLED = 'cancelled'
