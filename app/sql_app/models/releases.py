@@ -6,7 +6,7 @@ from sql_app.database import Base
 
 
 class ReleaseStageEnum(enum.Enum):
-    created = "created"
+    open = "open"
     in_progress = "in_progress"
     done = "done"
     cancelled = "cancelled"
@@ -17,7 +17,7 @@ class Release(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
-    status = Column(Enum(ReleaseStageEnum), default='created')
+    status = Column(Enum(ReleaseStageEnum), default='open')
     description = Column(String)
     start_date = Column(DateTime(timezone=True), nullable=False)
     end_date = Column(DateTime(timezone=True), nullable=True)

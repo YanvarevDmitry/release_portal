@@ -108,7 +108,7 @@ def populate_releases():
         # Пример данных для таблицы ReleaseStage
         release1 = Release(
             name="Release ios",
-            status=ReleaseStageEnum.created,
+            status=ReleaseStageEnum.open,
             description="First ios release",
             start_date="2023-01-01T00:00:00",
             end_date="2023-01-31T23:59:59",
