@@ -112,13 +112,14 @@ def get_features(db: Session,
 
     stmt = select(Feature, func.array_agg(func.json_build_object('id', Task.id,
                                                                  'feature_id', Task.feature_id,
-                                                                 'task_type_id', Task.task_type_id,
+                                                                 'task_type', TaskType.name,
                                                                  'status', Task.status,
                                                                  'attachments',
                                                                  task_attachments_cte.c.attachments,
                                                                  'comments', task_comments_cte.c.comments)).label(
         'tasks'))
     stmt = stmt.join(Task, Task.feature_id == Feature.id)
+    stmt = stmt.join(TaskType, TaskType.id == Task.task_type_id)
     stmt = stmt.join(task_attachments_cte, task_attachments_cte.c.task_id == Task.id, isouter=True)
     stmt = stmt.join(task_comments_cte, task_comments_cte.c.task_id == Task.id, isouter=True)
     if feature_id:

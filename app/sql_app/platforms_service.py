@@ -1,13 +1,11 @@
-from sqlalchemy import select
+from sqlalchemy import select, insert
 from sqlalchemy.orm import Session
 from sql_app.models.platforms import Platform
 
 
 def create_platform(name: str, db: Session):
-    platform = Platform(name=name)
-    db.add(platform)
-    db.commit()
-    db.refresh(platform)
+    stmt = insert(Platform).values(name=name).returning(Platform)
+    platform = db.execute(stmt).scalar()
     return platform
 
 

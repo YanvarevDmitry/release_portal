@@ -59,7 +59,7 @@ def get_all_releases(db: db_session,
     data, page_size, total = releases_service.get_all_releases(db=db,
                                                                platform_id=platform_id,
                                                                channel_id=channel_id,
-                                                               status = status.value if status else None,
+                                                               status=status.value if status else None,
                                                                page=page,
                                                                page_size=page_size)
     result = []
@@ -149,25 +149,26 @@ def generate_report(release_id: int, db: db_session):
                         filename=file_path)
 
 
-@router.put("/{stage_id}")
-def update_release(stage_id: int,
-                   name: str | None,
-                   description: str | None,
-                   start_date: str | None,
-                   end_date: str | None,
+@router.patch("/{release_id}")
+def update_release(release_id: int,
                    current_user: get_current_user,
-                   db: db_session):
-    logger.info("User %s is attempting to update release with ID: %d", current_user.username, stage_id)
+                   db: db_session,
+                   name: str | None = None,
+                   description: str | None = None,
+                   start_date: str | None = None,
+                   end_date: str | None = None,
+                   ):
+    logger.info("User %s is attempting to update release with ID: %d", current_user.username, release_id)
     if current_user.role not in [RolesEnum.ADMIN.value, RolesEnum.RELEASE_MANAGER.value]:
         logger.warning("User %s does not have enough permissions", current_user.username)
         raise HTTPException(status_code=403, detail="Not enough permissions")
-    updated_release = update_release(stage_id=stage_id,
+    updated_release = update_release(stage_id=release_id,
                                      name=name,
                                      description=description,
                                      start_date=start_date,
                                      end_date=end_date,
                                      db=db)
-    logger.info("Release with ID: %d updated successfully by user %s", stage_id, current_user.username)
+    logger.info("Release with ID: %d updated successfully by user %s", release_id, current_user.username)
     return updated_release
 
 

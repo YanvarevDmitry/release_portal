@@ -1,13 +1,12 @@
-from sqlalchemy import select
+from sqlalchemy import select, insert
 from sqlalchemy.orm import Session
 from sql_app.models.channels import Channel
 
 
 def create_channel(name: str, db: Session):
-    channel = Channel(name=name)
-    db.add(Channel)
+    stmt = insert(Channel).values(name=name).returning(Channel)
+    channel = db.execute(stmt).scalar()
     db.commit()
-    db.refresh(channel)
     return channel
 
 

@@ -109,7 +109,7 @@ def update_task(task_id: int,
     task_approver = tasks_service.get_task_type_approver(task_type_id=task.task_type_id, db=db)
     if current_user.role not in [RolesEnum.ADMIN.value, RolesEnum.RELEASE_MANAGER.value]:
         if task_approver and task_approver[1] != current_user.role:
-            logger.warning("User %s does not have enough permissions. Only user with role %s can update task",
+            logger.warning("%s does not have enough permissions. Only user with role %s can update task",
                            current_user.username,
                            task_approver[1])
             raise HTTPException(status_code=403,
