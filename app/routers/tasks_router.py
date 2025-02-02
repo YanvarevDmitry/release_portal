@@ -137,7 +137,7 @@ def upload_attachment(task_id: int, link: str, current_user: get_current_user, d
     return tasks_service.create_attachment(task_id=task_id, link=link, user_id=current_user.id, db=db)
 
 
-@router.post('{task_id}/comment', response_model=TaskCommentOut, status_code=201)
+@router.post('/{task_id}/comment', response_model=TaskCommentOut, status_code=201)
 def add_comment(task_id: int, comment: str, current_user: get_current_user, db: db_session):
     task = tasks_service.get_task(task_id=task_id, db=db)
     if not task:
@@ -148,7 +148,7 @@ def add_comment(task_id: int, comment: str, current_user: get_current_user, db: 
     return comment
 
 
-@router.get('{task_id}/comments', status_code=200)
+@router.get('/{task_id}/comments', status_code=200)
 def get_comments(task_id: int, db: db_session):
     task = tasks_service.get_task(task_id=task_id, db=db)
     if not task:
