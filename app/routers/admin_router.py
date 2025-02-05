@@ -1,6 +1,8 @@
+import hashlib
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, APIRouter
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from schemas import User, UserCreate
@@ -15,6 +17,10 @@ from schemas import UserOut
 router = APIRouter(prefix='/admin', tags=['admin'])
 get_current_user = Annotated[User, Depends(get_current_user)]
 db_session = Annotated[Session, Depends(get_database)]
+
+
+class Password(BaseModel):
+    password: str
 
 
 @router.get('/users')
@@ -37,7 +43,7 @@ def update_user(user_id: int,
                 current_user: get_current_user,
                 db: db_session,
                 role: RolesEnum | None = None,
-                password: str | None = None,
+                password: Password | None = None,
                 ):
     if current_user.role != RolesEnum.ADMIN.value:
         raise HTTPException(status_code=403, detail='Not enough permissions')
