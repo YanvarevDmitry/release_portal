@@ -26,8 +26,8 @@ def update_user(user_id: int, db: Session, role: str | None = None, password: st
     values = {}
     if role is not None:
         values['role'] = role.value
-    if password:
-        values['hashed_password'] = get_password_hash(password)
+    if password is not None:
+        values['hashed_password'] = get_password_hash(password.password)
     stmt = update(User).where(User.id == user_id).values(**values).returning(User)
     user = db.execute(stmt).scalar_one()
     db.commit()
