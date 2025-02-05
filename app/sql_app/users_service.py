@@ -29,7 +29,7 @@ def update_user(user_id: int, db: Session, role: str | None = None, password: st
     if password:
         values['hashed_password'] = get_password_hash(password)
     stmt = update(User).where(User.id == user_id).values(**values).returning(User)
-    user = db.execute(stmt).scalar().first()
+    user = db.execute(stmt).scalar_one()
     db.commit()
     return user
 
