@@ -10,7 +10,7 @@ from sql_app.models.user import RolesEnum
 from sql_app.users_service import create_user, get_all_users, get_user
 from auth import get_current_user
 
-from app.schemas import UserOut
+from schemas import UserOut
 
 router = APIRouter(prefix='/admin', tags=['admin'])
 get_current_user = Annotated[User, Depends(get_current_user)]
