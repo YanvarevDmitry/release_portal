@@ -24,7 +24,7 @@ def update_user_email(user_id: int, email: str, db) -> User:
 
 def update_user(user_id: int, db: Session, role: str | None = None, password: str | None = None) -> User:
     values = {}
-    if role:
+    if role is not None:
         values['role'] = role
     if password:
         values['hashed_password'] = get_password_hash(password)
