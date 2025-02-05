@@ -38,7 +38,7 @@ def create_new_user(user: UserCreate, current_user: get_current_user, db: db_ses
     return create_user(user=user, db=db)
 
 
-@router.put('/users/{user_id}', response_model=UserOut, status_code=201)
+@router.patch('/users/{user_id}', response_model=UserOut, status_code=201)
 def update_user(user_id: int,
                 current_user: get_current_user,
                 db: db_session,
