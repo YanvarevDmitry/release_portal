@@ -10,6 +10,8 @@ from sql_app.models.user import RolesEnum
 from sql_app.users_service import create_user, get_all_users, get_user
 from auth import get_current_user
 
+from app.schemas import UserOut
+
 router = APIRouter(prefix='/admin', tags=['admin'])
 get_current_user = Annotated[User, Depends(get_current_user)]
 db_session = Annotated[Session, Depends(get_database)]
@@ -30,7 +32,7 @@ def create_new_user(user: UserCreate, current_user: get_current_user, db: db_ses
     return create_user(user=user, db=db)
 
 
-@router.put('/users/{user_id}')
+@router.put('/users/{user_id}', response_model=UserOut, status_code=201)
 def update_user(user_id: int,
                 current_user: get_current_user,
                 db: db_session,
@@ -43,7 +45,7 @@ def update_user(user_id: int,
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
 
-    return users_service.update_user(db=db, user_id=user_id, role=role.value)
+    return users_service.update_user(db=db, user_id=user_id, role=role.value, password=password)
 
 
 @router.delete('/users/{user_id}')
